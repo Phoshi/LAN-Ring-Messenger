@@ -12,7 +12,12 @@ namespace RingLAN {
         /// The address of this client. Determines which messages are handled and where messages are sent from.
         /// Initialised to -1 because this needs to be set up when the LAN ring is turned on, not the client!
         /// </summary>
-        private int _address = -1;
+        private char _address = ' ';
+        public char Address { get { return _address; }
+            set {
+                _comms.Send(new Message(value.ToString(), value, MessageType.Login));
+            }
+        }
 
         /// <summary>
         /// The comms object (implementing ICommunication) to be used for communication in this object
@@ -22,7 +27,12 @@ namespace RingLAN {
         //
         //Constructors
         //
-        public Client() {
+        /// <summary>
+        /// Sets up a new client object communicating using the specified interface
+        /// </summary>
+        /// <param name="comms">The interface (implementing ICommunication) that will handle sending and recieving messages</param>
+        public Client(ICommunication comms) {
+            _comms = comms;
         }
 
         //
