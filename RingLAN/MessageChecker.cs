@@ -14,8 +14,9 @@ namespace RingLAN {
         /// </summary>
         /// <param name="message">The message object</param>
         /// <returns>Integrity - true for valid, false for invalid</returns>
-        public static bool Check(LowLevelMessage message) {
-            throw new NotImplementedException();
+        public static bool Check(Message message) {
+            byte correctChecksum = GetChecksum(message);
+            return correctChecksum == message.Checksum;
         }
 
         /// <summary>
@@ -23,8 +24,13 @@ namespace RingLAN {
         /// </summary>
         /// <param name="message">The message object</param>
         /// <returns>The one-byte checksum</returns>
-        public static byte GetChecksum(LowLevelMessage message) {
-            throw new NotImplementedException();
+        public static byte GetChecksum(Message message) {
+            int total = 0;
+            byte[] byteArray = message.ToByteArray(false); //Get message bytes without a computed checksum
+            foreach (byte b in byteArray) {
+                total += b;
+            }
+            return (byte) (~(total % 128));
         }
     }
 }
