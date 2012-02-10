@@ -55,10 +55,11 @@
     </Compile>
     <Compile Include="COMInput.cs" />
     <Compile Include="ICommunication.cs" />
-    <Compile Include="LowLevelMessage.cs" />
+    <Compile Include="InMemoryInput.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="MessageChecker.cs" />
     <Compile Include="MessageEventArgs.cs" />
+    <Compile Include="MessageType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="ClientUI.resx">
