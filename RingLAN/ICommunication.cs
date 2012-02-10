@@ -8,7 +8,7 @@ namespace RingLAN {
     /// <summary>
     /// The interface to all comms methods, whether over RS-232, USB, virtual, et cetera.
     /// </summary>
-    interface ICommunication {
+    public interface ICommunication {
         /// <summary>
         /// Sends a message object
         /// </summary>
