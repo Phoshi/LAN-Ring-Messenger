@@ -82,7 +82,12 @@ namespace RingLAN {
         /// </summary>
         /// <param name="data">A byte array containing the packet data.</param>
         public Message(byte[] data) {
-            
+            _to = (char) data[1];
+            _from = (char) data[2];
+            _type = (from kvPair in _messageTypes where kvPair.Value == data[3] select kvPair.Key).First();
+            byte[] payloadData = data.Skip(4).Take(10).ToArray();
+            _message = ASCIIEncoding.ASCII.GetString(payloadData);
+            _checksum = data[14];
         }
 
         /// <summary>
