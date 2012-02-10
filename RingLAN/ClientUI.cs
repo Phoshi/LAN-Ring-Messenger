@@ -37,7 +37,7 @@ namespace RingLAN {
         /// <param name="sender">The Client object that raised the event</param>
         /// <param name="e">The Message Event Args object containing the message object to be displayed</param>
         void MessageRecieved(object sender, MessageEventArgs e) {
-            RecievedMessagesBox.AppendText(e.Message.ToString() + "\n");
+            DisplayRecievedMessage(e.Message);
         }
 
         /// <summary>
@@ -79,6 +79,10 @@ namespace RingLAN {
             RecievedMessagesBox.AppendText(" -!- " + message + "\n");
         }
 
+        /// <summary>
+        /// Show a recieved message in the most appropriate context-sensitive way
+        /// </summary>
+        /// <param name="message">Message object to show</param>
         private void DisplayRecievedMessage(Message message) {
             RecievedMessagesBox.AppendText(" -{0}- {1}".With(message.Sender, message.Payload));
         }
