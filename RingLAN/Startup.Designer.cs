@@ -31,14 +31,16 @@
             this.PhysicalLaunchButton = new System.Windows.Forms.Button();
             this.PhysicalPortSelect = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.NoisePotential = new System.Windows.Forms.NumericUpDown();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.NoisePotential)).BeginInit();
             this.SuspendLayout();
             // 
             // VirtualLaunchButton
             // 
             this.VirtualLaunchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.VirtualLaunchButton.Location = new System.Drawing.Point(187, 49);
+            this.VirtualLaunchButton.Location = new System.Drawing.Point(187, 76);
             this.VirtualLaunchButton.Name = "VirtualLaunchButton";
             this.VirtualLaunchButton.Size = new System.Drawing.Size(75, 23);
             this.VirtualLaunchButton.TabIndex = 0;
@@ -50,12 +52,13 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.NoisePotential);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.VirtualItemsSelect);
             this.groupBox1.Controls.Add(this.VirtualLaunchButton);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(268, 78);
+            this.groupBox1.Size = new System.Drawing.Size(268, 105);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Virtual";
@@ -79,7 +82,7 @@
             "4",
             "5",
             "6"});
-            this.VirtualItemsSelect.Location = new System.Drawing.Point(6, 51);
+            this.VirtualItemsSelect.Location = new System.Drawing.Point(6, 76);
             this.VirtualItemsSelect.Name = "VirtualItemsSelect";
             this.VirtualItemsSelect.Size = new System.Drawing.Size(102, 21);
             this.VirtualItemsSelect.TabIndex = 1;
@@ -92,9 +95,9 @@
             this.groupBox2.Controls.Add(this.PhysicalLaunchButton);
             this.groupBox2.Controls.Add(this.PhysicalPortSelect);
             this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Location = new System.Drawing.Point(12, 97);
+            this.groupBox2.Location = new System.Drawing.Point(12, 123);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(268, 99);
+            this.groupBox2.Size = new System.Drawing.Size(268, 115);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Physical";
@@ -102,7 +105,7 @@
             // PhysicalLaunchButton
             // 
             this.PhysicalLaunchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.PhysicalLaunchButton.Location = new System.Drawing.Point(187, 72);
+            this.PhysicalLaunchButton.Location = new System.Drawing.Point(187, 88);
             this.PhysicalLaunchButton.Name = "PhysicalLaunchButton";
             this.PhysicalLaunchButton.Size = new System.Drawing.Size(75, 23);
             this.PhysicalLaunchButton.TabIndex = 2;
@@ -128,11 +131,23 @@
             this.label2.TabIndex = 0;
             this.label2.Text = "A physical ring using RS-232";
             // 
+            // NoisePotential
+            // 
+            this.NoisePotential.Location = new System.Drawing.Point(6, 50);
+            this.NoisePotential.Name = "NoisePotential";
+            this.NoisePotential.Size = new System.Drawing.Size(102, 20);
+            this.NoisePotential.TabIndex = 3;
+            this.NoisePotential.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            // 
             // Startup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(292, 208);
+            this.ClientSize = new System.Drawing.Size(292, 250);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
@@ -143,6 +158,7 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.NoisePotential)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -157,5 +173,6 @@
         private System.Windows.Forms.Button PhysicalLaunchButton;
         private System.Windows.Forms.ComboBox PhysicalPortSelect;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.NumericUpDown NoisePotential;
     }
 }

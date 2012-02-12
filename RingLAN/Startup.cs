@@ -44,10 +44,12 @@ namespace RingLAN {
 
         private void VirtualLaunchButton_Click(object sender, EventArgs e) {
             int numClients = int.Parse(VirtualItemsSelect.Text);
+            int lineQuality = (int) NoisePotential.Value;
             Logger.Log("Setting up virtual ring {0} long".With(numClients));
             List<ClientUI> clients = new List<ClientUI>();
             for (int i = 1; i <= numClients; i++) {
                 InMemoryInput comms = new InMemoryInput();
+                comms.quality = lineQuality;
                 ClientUI client = new ClientUI(comms);
                 client.FormClosed += client_FormClosed;
                 openForms++;
