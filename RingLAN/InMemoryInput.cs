@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using Extensions;
 
 namespace RingLAN {
     class InMemoryInput : COMInput {
-        private List<byte> _buffer = new List<byte>();
+        private readonly List<byte> _buffer = new List<byte>();
         public int quality = 10;
 
         public List<byte> Buffer {

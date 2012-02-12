@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Extensions;
+﻿using System.Collections.Generic;
 
 namespace RingLAN {
     public class Client {
@@ -19,7 +15,7 @@ namespace RingLAN {
 
         private bool _loggedIn;
 
-        private List<char> _identifiedUsers = new List<char>();
+        private readonly List<char> _identifiedUsers = new List<char>();
 
         public bool Debug {
             get { return _promiscuous; }
@@ -39,7 +35,7 @@ namespace RingLAN {
         public char Address {
             get { return _address; }
             set {
-                _comms.Send(new Message(null, value, value, MessageType.Login));
+                Communications.Send(new Message(null, value, value, MessageType.Login));
                 _address = value;
             }
         }
@@ -51,7 +47,7 @@ namespace RingLAN {
             get { return _loggedIn; }
             set {
                 if (!value) {
-                    _comms.PassOn(new Message(null, Address, Address, MessageType.Logout));
+                    Communications.PassOn(new Message(null, Address, Address, MessageType.Logout));
                 }
             }
         }
@@ -64,16 +60,9 @@ namespace RingLAN {
         }
 
         /// <summary>
-        /// The comms object (implementing ICommunication) to be used for communication in this object
-        /// </summary>
-        private ICommunication _comms;
-
-        /// <summary>
         /// Gets the ICommunication object implementing communications
         /// </summary>
-        public ICommunication Communications {
-            get { return _comms; }
-        }
+        public ICommunication Communications { get; private set; }
 
         //
         //Constructors
@@ -84,7 +73,7 @@ namespace RingLAN {
         /// <param name="comms">The interface (implementing ICommunication) that will handle sending and recieving messages</param>
         public Client(ICommunication comms) {
             Logger.Log("New Client starting up.");
-            _comms = comms;
+            Communications = comms;
             comms.Parent = this;
             comms.Recieved += RecieveMessage;
             comms.Failed += FailedMessage;
@@ -95,7 +84,7 @@ namespace RingLAN {
         //
 
         public void Close() {
-            _comms.Close();
+            Communications.Close();
         }
 
         //
@@ -137,7 +126,7 @@ namespace RingLAN {
         /// <param name="sender">The UI object that requested the send</param>
         /// <param name="args">The MessageEventArgs object representing the message to send</param>
         public void SendMessage(object sender, MessageEventArgs args) {
-            _comms.Send(args.Message);
+            Communications.Send(args.Message);
             if (args.Message.Address != Address) {
                 OnActionableMessageRecieved(args);
             }
@@ -153,7 +142,7 @@ namespace RingLAN {
             if (message.Type == MessageType.Login) {
                 if (message.SenderAddress == Address) {
                     if (LoggedIn) {
-                        _comms.PassOn(message.Acknowledge);
+                        Communications.PassOn(message.Acknowledge);
                     }
                     else {
                         _loggedIn = true;
@@ -163,7 +152,7 @@ namespace RingLAN {
                 if (!_identifiedUsers.Contains(message.Address)) {
                     _identifiedUsers.Add(message.Address);
                 }
-                _comms.PassOn(new Message(null, message.Address, this.Address, MessageType.IdentResponse));
+                Communications.PassOn(new Message(null, message.Address, this.Address, MessageType.IdentResponse));
                 OnActionableMessageRecieved(args);
             }
             if (message.Type == MessageType.Logout) {

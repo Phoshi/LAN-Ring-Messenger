@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.IO.Ports;
 using Extensions;
@@ -50,8 +45,7 @@ namespace RingLAN {
             Logger.Log("Setting up virtual ring {0} long".With(numClients));
             List<ClientUI> clients = new List<ClientUI>();
             for (int i = 1; i <= numClients; i++) {
-                InMemoryInput comms = new InMemoryInput();
-                comms.quality = lineQuality;
+                InMemoryInput comms = new InMemoryInput {quality = lineQuality};
                 ClientUI client = new ClientUI(comms);
                 client.FormClosed += client_FormClosed;
                 openForms++;
@@ -86,11 +80,11 @@ namespace RingLAN {
             }
             catch (ArgumentException ex) {
                 Logger.Log(ex.Message, "Failure");
-                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, @"Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (IOException ex) {
                 Logger.Log(ex.Message, "Failure");
-                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);                
+                MessageBox.Show(ex.Message, @"Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);                
             }
         }
     }

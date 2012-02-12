@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace RingLAN {
     public static class listExtensions {
@@ -37,10 +36,7 @@ namespace RingLAN {
         public static Pending NextTo(this List<Pending> actOn, char target) {
             IEnumerable<Pending> items = actOn.OrderByDescending(item => item.LastSend).Unique(item => item.Message.SenderAddress).Where(
                                     item => item.Message.Address == target);
-            if (items.Count() > 0) {
-                return items.First();
-            }
-            return null;
+            return items.Count() > 0 ? items.First() : null;
         }
     }
 }
