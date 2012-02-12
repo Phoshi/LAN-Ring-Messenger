@@ -92,6 +92,7 @@
             // 
             // DebugModeCheck
             // 
+            this.DebugModeCheck.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.DebugModeCheck.AutoSize = true;
             this.DebugModeCheck.Location = new System.Drawing.Point(334, 13);
             this.DebugModeCheck.Name = "DebugModeCheck";
@@ -117,7 +118,7 @@
             this.BringDownTheSkyButton.Name = "BringDownTheSkyButton";
             this.BringDownTheSkyButton.Size = new System.Drawing.Size(85, 23);
             this.BringDownTheSkyButton.TabIndex = 7;
-            this.BringDownTheSkyButton.Text = "Stress Testing";
+            this.BringDownTheSkyButton.Text = "Send Raw";
             this.BringDownTheSkyButton.UseVisualStyleBackColor = true;
             this.BringDownTheSkyButton.Click += new System.EventHandler(this.BringDownTheSkyButton_Click);
             // 
