@@ -16,7 +16,7 @@ namespace RingLAN {
         //
         //Private Class Variables
         //
-
+        
         private SerialPort _port;
         private Client _parent;
         private List<Pending> _pending = new List<Pending>();
@@ -200,9 +200,14 @@ namespace RingLAN {
                     failedItems.ForEach(item => OnMessageFailed(new MessageEventArgs(item.Message)));
                     _pending = _pending.Where(item => item.SendCount <= 5).ToList();
                     messages =
-                        _pending.Where(item => item.LastSend == DateTime.MinValue || item.LastSend < DateTime.UtcNow.AddSeconds(-2)).OrderByDescending(
-                            item => item.LastSend).Unique(
-                                item => item.Message.Sender);
+                        _pending.Where(
+                            item => item.LastSend < DateTime.UtcNow.AddSeconds(-1) && item.LastSend != DateTime.MinValue).OrderByDescending(
+                                item => item.LastSend.Ticks).Unique(
+                                    item => item.Message.Address);
+                    if (messages.Count() == 0) {
+                        messages = _pending.Where(item => item.LastSend == DateTime.MinValue).Unique(item => item.Message.Address);
+                        messages = messages.Where(item => item.Message == _pending.NextTo(item.Message.Address).Message);
+                    }
                 }
 
                 foreach (Pending message in messages) {
@@ -211,7 +216,7 @@ namespace RingLAN {
                     byte[] buffer = message.Message.ToByteArray();
                     putChars(buffer);
                 }
-                Thread.Sleep(400);
+                Thread.Sleep(50);
             }
         }
 
