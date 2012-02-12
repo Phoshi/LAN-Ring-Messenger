@@ -93,6 +93,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="Startup.resx">
       <DependentUpon>Startup.cs</DependentUpon>
@@ -106,6 +107,30 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\Horses\magichorn.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\Horses\generic.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\Horses\lightning lesbian.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\Horses\song smile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\Horses\squiggletail.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\Horses\tree kicker.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\Horses\yellowquiet.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
