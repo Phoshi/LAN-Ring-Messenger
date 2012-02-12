@@ -3,16 +3,51 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RingLAN", "RingLAN\RingLAN.csproj", "{D285737D-2110-40BD-B851-D547C8C3689C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RingLANTests", "RingLANTests\RingLANTests.csproj", "{AAB706AE-4EB0-4610-84DB-CB0317595489}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D285737D-2110-40BD-B851-D547C8C3689C} = {D285737D-2110-40BD-B851-D547C8C3689C}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9F274D80-1F94-4118-BA89-931A178A2357}"
+	ProjectSection(SolutionItems) = preProject
+		Local.testsettings = Local.testsettings
+		RingLAN.vsmdi = RingLAN.vsmdi
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
 Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = RingLAN.vsmdi
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D285737D-2110-40BD-B851-D547C8C3689C}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{D285737D-2110-40BD-B851-D547C8C3689C}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{D285737D-2110-40BD-B851-D547C8C3689C}.Debug|Mixed Platforms.Build.0 = Debug|x86
 		{D285737D-2110-40BD-B851-D547C8C3689C}.Debug|x86.ActiveCfg = Debug|x86
 		{D285737D-2110-40BD-B851-D547C8C3689C}.Debug|x86.Build.0 = Debug|x86
+		{D285737D-2110-40BD-B851-D547C8C3689C}.Release|Any CPU.ActiveCfg = Release|x86
+		{D285737D-2110-40BD-B851-D547C8C3689C}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{D285737D-2110-40BD-B851-D547C8C3689C}.Release|Mixed Platforms.Build.0 = Release|x86
 		{D285737D-2110-40BD-B851-D547C8C3689C}.Release|x86.ActiveCfg = Release|x86
 		{D285737D-2110-40BD-B851-D547C8C3689C}.Release|x86.Build.0 = Release|x86
+		{AAB706AE-4EB0-4610-84DB-CB0317595489}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAB706AE-4EB0-4610-84DB-CB0317595489}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAB706AE-4EB0-4610-84DB-CB0317595489}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{AAB706AE-4EB0-4610-84DB-CB0317595489}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{AAB706AE-4EB0-4610-84DB-CB0317595489}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AAB706AE-4EB0-4610-84DB-CB0317595489}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAB706AE-4EB0-4610-84DB-CB0317595489}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAB706AE-4EB0-4610-84DB-CB0317595489}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{AAB706AE-4EB0-4610-84DB-CB0317595489}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{AAB706AE-4EB0-4610-84DB-CB0317595489}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
