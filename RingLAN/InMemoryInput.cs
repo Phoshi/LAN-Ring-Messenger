@@ -8,14 +8,13 @@ using Extensions;
 namespace RingLAN {
     class InMemoryInput : COMInput {
         private List<byte> _buffer = new List<byte>();
-        private Client _parent;
-        private int quality = 9999;
+        private const int quality = 9999;
 
         public List<byte> Buffer {
             get { return _buffer; }
         }
 
-        private InMemoryInput _partner = null;
+        private InMemoryInput _partner;
 
         public InMemoryInput Partner {
             get { return _partner; }

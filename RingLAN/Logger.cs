@@ -7,7 +7,7 @@ using Extensions;
 
 namespace RingLAN {
     static class Logger {
-        private static string path = "output.log";
+        private const string path = "output.log";
 
         static Logger() {
             File.Delete(path);
@@ -22,8 +22,9 @@ namespace RingLAN {
                 logger.WriteLine("{0}: {1}".With(section, text));
                 logger.Close();
             }
-            catch (IOException ex) {
+            catch (IOException) {
                 //Logger failed, better log that.
+                //Wait...
             }
         }
     }

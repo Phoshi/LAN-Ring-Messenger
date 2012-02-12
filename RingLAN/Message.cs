@@ -16,8 +16,8 @@ namespace RingLAN {
         private char _from;
         private string _message = "";
         private MessageType _type;
-        private byte _checksum = 0;
-        private Dictionary<MessageType, char> _messageTypes = new Dictionary<MessageType, char>() {
+        private byte _checksum;
+        private Dictionary<MessageType, char> _messageTypes = new Dictionary<MessageType, char> {
                                                                                                       {MessageType.Login, 'L'},
                                                                                                       {MessageType.Logout, 'X'}, 
                                                                                                       {MessageType.IdentResponse, 'R'},
@@ -110,6 +110,7 @@ namespace RingLAN {
         /// </summary>
         /// <param name="message">The message text</param>
         /// <param name="recipient">The client ID to send to</param>
+        /// <param name="from">The client the message is from</param>
         /// <param name="type">The type of message to send</param>
         public Message(string message, char recipient, char from, MessageType type) {
             _message = message;

@@ -19,7 +19,7 @@ namespace RingLAN {
             InitializeComponent();
         }
 
-        private int openForms = 0;
+        private int openForms;
 
         /// <summary>
         /// Performs initial setup and loading
@@ -27,7 +27,7 @@ namespace RingLAN {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Startup_Load(object sender, EventArgs e) {
-            VirtualItemsSelect.Text = VirtualItemsSelect.Text = "2";
+            VirtualItemsSelect.SelectedIndex = 0;
             PopulatePhysicalPorts();
         }
 

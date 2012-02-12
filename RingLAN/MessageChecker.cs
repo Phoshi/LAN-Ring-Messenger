@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace RingLAN {
+﻿namespace RingLAN {
     /// <summary>
     /// Checks a message against its checksum to ensure it was communicated properly.
     /// Also generates checksums so the other end can do the same.

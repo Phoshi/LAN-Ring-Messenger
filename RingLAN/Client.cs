@@ -15,9 +15,9 @@ namespace RingLAN {
         /// </summary>
         private char _address = ' ';
 
-        private bool _promiscuous = false;
+        private bool _promiscuous;
 
-        private bool _loggedIn = false;
+        private bool _loggedIn;
 
         private List<char> _identifiedUsers = new List<char>();
 
@@ -66,7 +66,7 @@ namespace RingLAN {
         /// <summary>
         /// The comms object (implementing ICommunication) to be used for communication in this object
         /// </summary>
-        private ICommunication _comms = null;
+        private ICommunication _comms;
 
         /// <summary>
         /// Gets the ICommunication object implementing communications

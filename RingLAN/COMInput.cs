@@ -20,7 +20,7 @@ namespace RingLAN {
         private SerialPort _port;
         private Client _parent;
         private List<Pending> _pending = new List<Pending>();
-        private bool _closed = false;
+        private bool _closed;
         private Thread readThread, writeThread;
 
         /// <summary>
@@ -242,7 +242,7 @@ namespace RingLAN {
                                 Logger.Log("Matched this to message '{0}'".With(toRemove.ToString()), _parent.DisplayAddress);
                                 _pending = _pending.Where(item => item.Message != toRemove).ToList();
                             }
-                            catch (NullReferenceException ex) {
+                            catch (NullReferenceException) {
                                 Logger.Log("Recieved Ack for unknown packet from {0}!".With(message.SenderAddress), _parent.DisplayAddress);
                             }
                         }

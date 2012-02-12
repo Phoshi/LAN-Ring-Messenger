@@ -14,7 +14,7 @@ namespace RingLAN {
         /// <summary>
         /// Holds the reference to this UI's underlying client object
         /// </summary>
-        private Client _client = null;
+        private Client _client;
 
         private Message _lastRecievedMessage;
         private DateTime _lastRecievedOn;
@@ -32,7 +32,6 @@ namespace RingLAN {
         /// Constructor for Client UI object
         /// </summary>
         /// <param name="comms">The interface to bind communications to</param>
-        /// <param name="bindsRecieve">Whether to automatically handle the communications interface's recieve event</param>
         public ClientUI(ICommunication comms) {
             InitializeComponent();
 
@@ -68,10 +67,10 @@ namespace RingLAN {
                 case MessageType.Login:
                 case MessageType.Logout:
                     DisplayLoginMessage(message);
-                    this.Invoke((Action) (() => HandleLogin(message)));
+                    this.Invoke((Action)HandleLogin);
                     break;
                 case MessageType.IdentResponse:
-                    this.Invoke((Action)(() => HandleLogin(message)));
+                    this.Invoke((Action)HandleLogin);
                     break;
                 case MessageType.Acknowledge:
                     DisplayStatusMessage("Ident taken! Try again.");
@@ -136,7 +135,7 @@ namespace RingLAN {
             }
             string messagetext = InputBox.Text;
             List<char> targets = new List<char>();
-            if (RecipientSelectBox.Text == "All") {
+            if (RecipientSelectBox.Text == @"All") {
                 targets.AddRange(_client.Clients);
             }
             else {
@@ -174,8 +173,7 @@ namespace RingLAN {
         // User manipulation and such
         //
 
-        private void HandleLogin(Message message) {
-            string newUser = message.Sender;
+        private void HandleLogin() {
             RecipientSelectBox.Items.Clear();
             RecipientSelectBox.Items.Add("All");
             foreach (char client in _client.Clients) {
@@ -236,7 +234,7 @@ namespace RingLAN {
             if (message.Type == MessageType.Login) {
                 if (message.Address == _client.Address) {
                     this.Invoke((Action) (() => this.Text = "({0}) {1}".With(_client.Address, this.Text)));
-                    this.Invoke((Action) (() => SendButton.Text = "Send"));
+                    this.Invoke((Action) (() => SendButton.Text = @"Send"));
                     DisplayStatusMessage("Login Successful.");
                     return;
                 }
@@ -246,7 +244,7 @@ namespace RingLAN {
                 if (!_client.LoggedIn) {
                     this.Invoke((Action)(() => this.Text = "Ring LAN UI".With(_client.Address, this.Text)));
                     this.Invoke((Action) (() => RecievedMessagesBox.Enabled = false));
-                    this.Invoke((Action)(() => SendButton.Text = "Login"));
+                    this.Invoke((Action)(() => SendButton.Text = @"Login"));
                     DisplayStatusMessage("Logout Successful.");
                     return;
                 }
