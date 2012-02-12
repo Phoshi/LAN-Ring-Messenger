@@ -16,6 +16,9 @@ namespace RingLAN {
         /// </summary>
         private Client _client;
 
+        private bool _loggedIn;
+        private List<char> _knownClients = new List<char>();
+
         private Message _lastRecievedMessage;
         private DateTime _lastRecievedOn;
 
@@ -119,6 +122,7 @@ namespace RingLAN {
         private void InputBox_KeyDown(object sender, KeyEventArgs e) {
             if (e.KeyCode == Keys.Return) {
                 SendButton_Click(this, null);
+                e.SuppressKeyPress = true;
             }
         }
 
@@ -152,7 +156,8 @@ namespace RingLAN {
                 }
             }
             if (targets.Count == 0) {
-                targets.AddRange(_client.Clients);
+                DisplayStatusMessage("Please select a recipient!");
+                return;
             }
             while (messagetext.Length > 0) {
                 foreach (char recipient in targets) {
@@ -231,13 +236,24 @@ namespace RingLAN {
         }
 
         private void DisplayLoginMessage(Message message) {
+            if (message.SenderAddress != _client.Address && _knownClients.Contains(message.SenderAddress)) {
+                DisplayStatusMessage("Login collision for {0} detected!".With(message.Sender));
+                return;
+            }
             if (message.Type == MessageType.Login) {
                 if (message.Address == _client.Address) {
-                    this.Invoke((Action) (() => this.Text = "({0}) {1}".With(_client.Address, this.Text)));
-                    this.Invoke((Action) (() => SendButton.Text = @"Send"));
-                    DisplayStatusMessage("Login Successful.");
+                    if (!_loggedIn) {
+                        this.Invoke((Action) (() => this.Text = "({0}) {1}".With(_client.Address, this.Text)));
+                        this.Invoke((Action) (() => SendButton.Text = @"Send"));
+                        DisplayStatusMessage("Login Successful.");
+                        _loggedIn = true;
+                    }
+                    else {
+                        DisplayStatusMessage("Login collision detected!");
+                    }
                     return;
                 }
+                _knownClients.Add(message.SenderAddress);
                 AddText(" > {0} has signed in!".With(message.Sender));
             }
             else {
@@ -246,8 +262,10 @@ namespace RingLAN {
                     this.Invoke((Action) (() => RecievedMessagesBox.Enabled = false));
                     this.Invoke((Action)(() => SendButton.Text = @"Login"));
                     DisplayStatusMessage("Logout Successful.");
+                    _loggedIn = false;
                     return;
                 }
+                _knownClients.Remove(message.SenderAddress);
                 AddText(" > {0} has signed out!".With(message.Sender));
             }
         }
