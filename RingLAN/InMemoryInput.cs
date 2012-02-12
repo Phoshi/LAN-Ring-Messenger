@@ -8,7 +8,7 @@ using Extensions;
 namespace RingLAN {
     class InMemoryInput : COMInput {
         private List<byte> _buffer = new List<byte>();
-        private const int quality = 9999;
+        public int quality = 10;
 
         public List<byte> Buffer {
             get { return _buffer; }
@@ -41,6 +41,7 @@ namespace RingLAN {
             Random rng = new Random();
             int failure1 = rng.Next(quality);
             int failure2 = rng.Next(quality);
+            int failure3 = rng.Next(quality);
 
             if (failure1 == 0) { //Failure!
                 Logger.Log("Corrupting packet {0}".With(new Message(toWrite).ToString()), "Failure");
@@ -51,6 +52,14 @@ namespace RingLAN {
             if (failure2 == 0) { //Critial Failure!
                 Logger.Log("Deleting Packet {0}".With(new Message(toWrite).ToString()), "Failure");
                 return;
+            }
+
+            if (failure3 == 0) { //Packet hilariously malformed!
+                Logger.Log("Deforming packet {0}".With(new Message(toWrite).ToString()), "Failure");
+                byte[] newBuffer = new byte[20];
+                Array.Copy(toWrite, newBuffer, 10);
+                Array.Copy(toWrite, 10, newBuffer, 14, 6);
+                toWrite = newBuffer;
             }
             Logger.Log("Sending Packet {0}".With(new Message(toWrite).ToString()), "In Memory Input");
             if (_partner == null) {
