@@ -60,7 +60,7 @@ namespace RingLAN {
         /// Gets an address suitable for display
         /// </summary>
         public string DisplayAddress {
-            get { return new string(Address, 1); }
+            get { return Names.GetName(Address); }
         }
 
         /// <summary>
@@ -199,6 +199,10 @@ namespace RingLAN {
                 if (!LoggedIn) {
                     _address = ' ';
                 }
+            }
+            if (message.Type == MessageType.Message) {
+                //If 6 attempts haven't gotten through, they probably logged out already
+                _identifiedUsers.Remove(message.Address);
             }
         }
     }
