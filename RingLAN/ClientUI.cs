@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Extensions;
+using ToastNotifier;
 
 namespace RingLAN {
     public partial class ClientUI : Form {
@@ -15,16 +16,29 @@ namespace RingLAN {
         /// </summary>
         private Client _client = null;
 
+        private Message _lastRecievedMessage;
+        private DateTime _lastRecievedOn;
+
+        private NotifierOptions notificationOptions = new NotifierOptions();
+
         /// <summary>
-        /// Constructor
+        /// Provides access to the underlying Client object
         /// </summary>
-        public ClientUI() {
+        public Client Client {
+            get { return _client; }
+        }
+
+        /// <summary>
+        /// Constructor for Client UI object
+        /// </summary>
+        /// <param name="comms">The interface to bind communications to</param>
+        /// <param name="bindsRecieve">Whether to automatically handle the communications interface's recieve event</param>
+        public ClientUI(ICommunication comms) {
             InitializeComponent();
 
-            InMemoryInput input = new InMemoryInput("COM1");
-            _client = new Client(input);
+            _client = new Client(comms);
             _client.ActionableMessageRecieved += MessageRecieved;
-            DisplayStatusMessage("Please insert your logon ID!");
+            SendMessage += _client.SendMessage;
         }
 
         //
@@ -32,12 +46,41 @@ namespace RingLAN {
         //
 
         /// <summary>
+        /// Event handler for form show
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ClientUI_Load(object sender, EventArgs e) {
+            DisplayStatusMessage("Please insert your unique login ID!");
+        }
+
+        /// <summary>
         /// Event Handler for new displayable message 
         /// </summary>
         /// <param name="sender">The Client object that raised the event</param>
         /// <param name="e">The Message Event Args object containing the message object to be displayed</param>
         void MessageRecieved(object sender, MessageEventArgs e) {
-            DisplayRecievedMessage(e.Message);
+            Message message = e.Message;
+            switch (message.Type) {
+                case MessageType.Message:
+                    DisplayRecievedMessage(message);
+                    break;
+                case MessageType.Login:
+                case MessageType.Logout:
+                    DisplayLoginMessage(message);
+                    this.Invoke((Action) (() => HandleLogin(message)));
+                    break;
+                case MessageType.IdentResponse:
+                    this.Invoke((Action)(() => HandleLogin(message)));
+                    break;
+                case MessageType.Acknowledge:
+                    DisplayStatusMessage("Ident taken! Try again.");
+                    this.Invoke((Action)(() => RecievedMessagesBox.Enabled = false));
+                    break;
+
+            }
+            _lastRecievedMessage = e.Message;
+            _lastRecievedOn = DateTime.UtcNow;
         }
 
         /// <summary>
@@ -56,15 +99,88 @@ namespace RingLAN {
             }
         }
 
+
+        private void LogOutButton_Click(object sender, EventArgs e) {
+            _client.LoggedIn = false;
+        }
+
+        private void DebugModeCheck_CheckedChanged(object sender, EventArgs e) {
+            _client.Debug = DebugModeCheck.Checked;
+        }
+
+        private void ClientUI_FormClosed(object sender, FormClosedEventArgs e) {
+            _client.LoggedIn = false;
+            _client.Close();
+        }
+
+        private void RecievedMessagesBox_KeyDown(object sender, KeyEventArgs e) {
+            e.SuppressKeyPress = true;
+        }
+
+        private void InputBox_KeyDown(object sender, KeyEventArgs e) {
+            if (e.KeyCode == Keys.Return) {
+                SendButton_Click(this, null);
+            }
+        }
+
         private void SendButton_Click(object sender, EventArgs e) {
-            if (_client.Address == ' ') {
-                _client.Address = char.Parse(InputBox.Text);
+            if (!_client.LoggedIn) {
+                if (InputBox.Text.Length == 0) {
+                    return;
+                }
+                _client.Address = InputBox.Text[0];
+                DisplayStatusMessage("Attempting login with {0}".With(_client.DisplayAddress));
+                RecievedMessagesBox.Enabled = true;
+                InputBox.Text = "";
                 return;
             }
             string messagetext = InputBox.Text;
-            char recipient = char.Parse(RecipientSelectBox.Text);
-            Message message = new Message(messagetext, recipient, MessageType.Message);
-            OnSendMessage(message);
+            List<char> targets = new List<char>();
+            if (RecipientSelectBox.Text == "All") {
+                targets.AddRange(_client.Clients);
+            }
+            else {
+                char recipient = (char) 0;
+                if (messagetext.Length > 3 && messagetext[1] == ':' && _client.Clients.Contains(messagetext[0])) {
+                    recipient = messagetext[0];
+                    messagetext = messagetext.Substring(3);
+                }
+                else if (RecipientSelectBox.Text.Length == 1) {
+                    recipient = char.Parse(RecipientSelectBox.Text);
+                }
+                if (recipient != (char) 0) {
+                    targets.Add(recipient);
+                }
+            }
+            if (targets.Count == 0) {
+                targets.AddRange(_client.Clients);
+            }
+            while (messagetext.Length > 0) {
+                foreach (char recipient in targets) {
+                    Message message = new Message(messagetext, recipient, _client.Address, MessageType.Message);
+                    OnSendMessage(message);
+                }
+                if (messagetext.Length > 10) {
+                    messagetext = messagetext.Substring(10);
+                }
+                else {
+                    break;
+                }
+            }
+            InputBox.Text = "";
+        }
+
+        //
+        // User manipulation and such
+        //
+
+        private void HandleLogin(Message message) {
+            string newUser = message.Sender;
+            RecipientSelectBox.Items.Clear();
+            RecipientSelectBox.Items.Add("All");
+            foreach (char client in _client.Clients) {
+                RecipientSelectBox.Items.Add(client);
+            }
         }
 
         //
@@ -72,11 +188,23 @@ namespace RingLAN {
         //
 
         /// <summary>
+        /// Appends text to the primary display
+        /// </summary>
+        /// <param name="text">The text to add</param>
+        private void AddText(string text) {
+            RecievedMessagesBox.Invoke((Action)(() => RecievedMessagesBox.AppendText(text + "\r\n")));
+        }
+
+        private void TrimMessageBox() {
+            RecievedMessagesBox.Invoke((Action) (() => RecievedMessagesBox.Text = RecievedMessagesBox.Text.TrimEnd(new[] {'\r', '\n'})));
+        }
+
+        /// <summary>
         /// Show a status-level message in the UI
         /// </summary>
         /// <param name="message">The string containing the message</param>
         private void DisplayStatusMessage(String message) {
-            RecievedMessagesBox.AppendText(" -!- " + message + "\n");
+            AddText(" -!- " + message);
         }
 
         /// <summary>
@@ -84,7 +212,47 @@ namespace RingLAN {
         /// </summary>
         /// <param name="message">Message object to show</param>
         private void DisplayRecievedMessage(Message message) {
-            RecievedMessagesBox.AppendText(" -{0}- {1}".With(message.Sender, message.Payload));
+            if (message == _lastRecievedMessage) {
+                DisplayStatusMessage("Potential Packet Duplication detected");
+            }
+            else if (_lastRecievedMessage.SenderAddress == message.SenderAddress && _lastRecievedMessage.Type == MessageType.Message &&
+                (DateTime.UtcNow - _lastRecievedOn).TotalSeconds < 5) {
+                TrimMessageBox();
+                AddText(message.Payload);
+                return;
+            }
+            AddText(" -{0} -> {1}- {2}".With(message.Sender, message.Recipient, message.Payload));
+            if (message.SenderAddress != _client.Address) {
+                this.Invoke((Action) (() => {
+                                          Notifier notifier = new Notifier(notificationOptions, "New Message", message.Payload,
+                                                                           "{0} -> {1}".With(message.Sender, message.Recipient));
+                                          notifier.parentForm = this;
+                                          notifier.Show();
+                                      }));
+            }
         }
+
+        private void DisplayLoginMessage(Message message) {
+            if (message.Type == MessageType.Login) {
+                if (message.Address == _client.Address) {
+                    this.Invoke((Action) (() => this.Text = "({0}) {1}".With(_client.Address, this.Text)));
+                    this.Invoke((Action) (() => SendButton.Text = "Send"));
+                    DisplayStatusMessage("Login Successful.");
+                    return;
+                }
+                AddText(" > {0} has signed in!".With(message.Sender));
+            }
+            else {
+                if (!_client.LoggedIn) {
+                    this.Invoke((Action)(() => this.Text = "Ring LAN UI".With(_client.Address, this.Text)));
+                    this.Invoke((Action) (() => RecievedMessagesBox.Enabled = false));
+                    this.Invoke((Action)(() => SendButton.Text = "Login"));
+                    DisplayStatusMessage("Logout Successful.");
+                    return;
+                }
+                AddText(" > {0} has signed out!".With(message.Sender));
+            }
+        }
+
     }
 }
