@@ -62,6 +62,7 @@
     <Compile Include="MessageChecker.cs" />
     <Compile Include="MessageEventArgs.cs" />
     <Compile Include="MessageType.cs" />
+    <Compile Include="Names.cs" />
     <Compile Include="Notifier.cs">
       <SubType>Form</SubType>
     </Compile>
