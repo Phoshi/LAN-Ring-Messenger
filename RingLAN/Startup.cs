@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -40,6 +41,7 @@ namespace RingLAN {
                 PhysicalPortSelect.Items.Add(portName);
                 PhysicalPortSelect.SelectedIndex = 0;
             }
+            PhysicalPortSelect.Items.Add("COM7");
         }
 
         private void VirtualLaunchButton_Click(object sender, EventArgs e) {
@@ -75,10 +77,21 @@ namespace RingLAN {
         }
 
         private void PhysicalLaunchButton_Click(object sender, EventArgs e) {
-            ICommunication comms = new COMInput(PhysicalPortSelect.Text);
             Logger.Log("Setting up physical client on port {0}".With(PhysicalPortSelect.Text));
-            ClientUI client = new ClientUI(comms);
-            client.Show();
+            try {
+                ICommunication comms = new COMInput(PhysicalPortSelect.Text);
+                ClientUI client = new ClientUI(comms);
+                client.Show();
+                this.Hide();
+            }
+            catch (ArgumentException ex) {
+                Logger.Log(ex.Message, "Failure");
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (IOException ex) {
+                Logger.Log(ex.Message, "Failure");
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);                
+            }
         }
     }
 }
