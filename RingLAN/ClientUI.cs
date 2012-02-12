@@ -40,6 +40,7 @@ namespace RingLAN {
 
             _client = new Client(comms);
             _client.ActionableMessageRecieved += MessageRecieved;
+            _client.Communications.Failed += MessageSendFailed;
             SendMessage += _client.SendMessage;
         }
 
@@ -86,6 +87,25 @@ namespace RingLAN {
         }
 
         /// <summary>
+        /// Event handler for failed sends
+        /// </summary>
+        /// <param name="sender">The communications interface that raised the failure</param>
+        /// <param name="args">The MessageEventArgs object containing the failed message object</param>
+        void MessageSendFailed(object sender, MessageEventArgs args) {
+            Message message = args.Message;
+            switch (message.Type) {
+                case MessageType.Login:
+                    DisplayStatusMessage("Ident probably taken! Try again!");
+                    this.Invoke((Action)(() => RecievedMessagesBox.Enabled = false));
+                    break;
+                case MessageType.Message:
+                    DisplayStatusMessage("Message '{0}' to {1} send failed!".With(message.Payload, message.Recipient));
+                    break;
+
+            }
+        }
+
+        /// <summary>
         /// The event to be raised when a message is requested to be sent from this client
         /// </summary>
         public event Client.SendMessageEventHandler SendMessage;
@@ -113,6 +133,25 @@ namespace RingLAN {
         private void ClientUI_FormClosed(object sender, FormClosedEventArgs e) {
             _client.LoggedIn = false;
             _client.Close();
+        }
+
+        private void AttemptKickButton_Click(object sender, EventArgs e) {
+            char target = RecipientSelectBox.Text[0];
+            _client.Communications.PassOn(new Message(null, target, target, MessageType.Logout));
+        }
+
+
+        private void BringDownTheSkyButton_Click(object sender, EventArgs e) {
+            byte[] buffer = new byte[InputBox.Text.Length];
+            int position = 0;
+            foreach (char c in InputBox.Text) {
+                buffer[position] = (byte) c;
+                position++;
+            }
+            if (buffer.Length >= 14) {
+                buffer[14] = MessageChecker.GetChecksum(new Message(buffer));
+            }
+            ((InMemoryInput)_client.Communications).putChars(buffer);
         }
 
         private void RecievedMessagesBox_KeyDown(object sender, KeyEventArgs e) {
@@ -269,6 +308,5 @@ namespace RingLAN {
                 AddText(" > {0} has signed out!".With(message.Sender));
             }
         }
-
     }
 }

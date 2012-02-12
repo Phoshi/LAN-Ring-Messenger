@@ -29,6 +29,8 @@
             this.RecipientSelectBox = new System.Windows.Forms.ComboBox();
             this.LogOutButton = new System.Windows.Forms.Button();
             this.DebugModeCheck = new System.Windows.Forms.CheckBox();
+            this.AttemptKickButton = new System.Windows.Forms.Button();
+            this.BringDownTheSkyButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // RecievedMessagesBox
@@ -98,11 +100,33 @@
             this.DebugModeCheck.UseVisualStyleBackColor = true;
             this.DebugModeCheck.CheckedChanged += new System.EventHandler(this.DebugModeCheck_CheckedChanged);
             // 
+            // AttemptKickButton
+            // 
+            this.AttemptKickButton.Location = new System.Drawing.Point(71, 9);
+            this.AttemptKickButton.Name = "AttemptKickButton";
+            this.AttemptKickButton.Size = new System.Drawing.Size(75, 23);
+            this.AttemptKickButton.TabIndex = 6;
+            this.AttemptKickButton.Text = "Kick Attempt";
+            this.AttemptKickButton.UseVisualStyleBackColor = true;
+            this.AttemptKickButton.Click += new System.EventHandler(this.AttemptKickButton_Click);
+            // 
+            // BringDownTheSkyButton
+            // 
+            this.BringDownTheSkyButton.Location = new System.Drawing.Point(152, 9);
+            this.BringDownTheSkyButton.Name = "BringDownTheSkyButton";
+            this.BringDownTheSkyButton.Size = new System.Drawing.Size(85, 23);
+            this.BringDownTheSkyButton.TabIndex = 7;
+            this.BringDownTheSkyButton.Text = "Stress Testing";
+            this.BringDownTheSkyButton.UseVisualStyleBackColor = true;
+            this.BringDownTheSkyButton.Click += new System.EventHandler(this.BringDownTheSkyButton_Click);
+            // 
             // ClientUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(462, 436);
+            this.Controls.Add(this.BringDownTheSkyButton);
+            this.Controls.Add(this.AttemptKickButton);
             this.Controls.Add(this.DebugModeCheck);
             this.Controls.Add(this.LogOutButton);
             this.Controls.Add(this.RecipientSelectBox);
@@ -126,5 +150,7 @@
         private System.Windows.Forms.ComboBox RecipientSelectBox;
         private System.Windows.Forms.Button LogOutButton;
         private System.Windows.Forms.CheckBox DebugModeCheck;
+        private System.Windows.Forms.Button AttemptKickButton;
+        private System.Windows.Forms.Button BringDownTheSkyButton;
     }
 }
