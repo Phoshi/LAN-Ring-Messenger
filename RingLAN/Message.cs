@@ -49,7 +49,7 @@ namespace RingLAN {
         /// Gets the string representing the client which sent the message
         /// </summary>
         public string Sender {
-            get { return new string(_from, 1); }
+            get { return Names.GetName(_from); }
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace RingLAN {
         /// Gets the string representing the client the message is addressed to
         /// </summary>
         public string Recipient {
-            get { return new string(_to, 1); }
+            get { return Names.GetName(_to); }
         }
 
         /// <summary>
