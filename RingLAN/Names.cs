@@ -10,13 +10,21 @@ namespace RingLAN {
     public static class Names {
         private static List<string> _names = new List<string> {
                                                           "Magichorn",
-                                                          "Lightning Lesbian",
+                                                          "Speedycloud",
                                                           "Song Smile",
                                                           "Tree Kicker",
                                                           "Yellowquiet",
                                                           "Squiggletail",
                                                       };
         private static Dictionary<char, string> assoc = new Dictionary<char, string>();
+        private static Dictionary<string, Image> images = new Dictionary<string, Image> {
+                                                                                            {"Magichorn", Properties.Resources.magichorn},
+                                                                                            {"Speedycloud", Properties.Resources.speedycloud},
+                                                                                            {"Song Smile", Properties.Resources.song_smile},
+                                                                                            {"Tree Kicker", Properties.Resources.tree_kicker},
+                                                                                            {"Yellowquiet", Properties.Resources.yellowquiet},
+                                                                                            {"Squiggletail", Properties.Resources.squiggletail},
+    };
 
         public static string GetName(char address, bool withAddress = true) {
             if (address == ' ') {
@@ -51,11 +59,10 @@ namespace RingLAN {
                 return null;
             }
             string name = GetName(address, false);
-            if (File.Exists(@"Horses\{0}.png".With(name))) {
-                Image horse = Image.FromFile(@"Horses\{0}.png".With(name));
-                return horse;
+            if (images.ContainsKey(name)) {
+                return images[name];
             }
-            return null;
+            return Properties.Resources.generic;
         }
     }
 }
