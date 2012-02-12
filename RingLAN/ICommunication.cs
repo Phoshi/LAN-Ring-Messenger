@@ -30,6 +30,10 @@ namespace RingLAN {
         /// <summary>
         /// An event that fires when a new message comes in
         /// </summary>
-        event MessageRecievedHandler Recieved; //Fires whenever a message is recieved.
+        event MessageRecievedHandler Recieved;
+        /// <summary>
+        /// An Event that fires when a message could not be sent
+        /// </summary>
+        event MessageRecievedHandler Failed; 
     }
 }
