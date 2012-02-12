@@ -131,12 +131,96 @@ namespace RingLAN {
         /// </summary>
         /// <param name="data">A byte array containing the packet data.</param>
         public Message(byte[] data) {
-            _to = (char) data[1];
-            _from = (char) data[2];
-            _type = (from kvPair in _messageTypes where kvPair.Value == data[3] select kvPair.Key).FirstOrDefault();
-            byte[] payloadData = data.Skip(4).Take(10).ToArray();
-            _message = ASCIIEncoding.ASCII.GetString(payloadData).Trim('\0');
-            _checksum = data[14];
+            try {
+                _to = (char)data[1];
+                _from = (char)data[2];
+                _type = (from kvPair in _messageTypes where kvPair.Value == data[3] select kvPair.Key).FirstOrDefault();
+                byte[] payloadData = data.Skip(4).Take(10).ToArray();
+                _message = ASCIIEncoding.ASCII.GetString(payloadData).Trim('\0');
+                _checksum = data[14];
+            }
+            catch (Exception) {
+                /*  I want to be the very best,
+                    Like no one ever was.
+                    To catch them is my real test,
+                    To train them is my cause.
+
+                    I will travel across the land,
+                    Searching far and wide.
+                    Each Pokemon to understand
+                    The power that's inside
+
+                    (Gotta catch 'em all)
+
+                    It's you and me
+                    I know it's my destiny
+
+                    Pokemon!
+
+                    You're my best friend,
+                    In a world we must defend.
+                    Pokemon
+
+                    (Gotta catch 'em all)
+
+                    A heart so true.
+                    Our courage will pull us through.
+                    You teach me and I'll teach you.
+                    Pokemon.
+
+                    (Gotta catch 'em all)
+
+                    Yeah
+                    Every challenge along the way
+                    with courage I will face.
+                    I will battle everyday
+                    to claim my rightful place.
+
+                    Come with me the time is right.
+                    There's no better team.
+                    Arm and arm well win the fight.
+                    It's always been our dream.
+
+                    Pokemon!
+
+                    (Gotta catch 'em all)
+
+                    It's you and me
+                    I know it's my destiny
+
+                    Pokemon!
+
+                    Oh, your my best friend,
+                    in a world we must defend.
+
+                    Pokemon!
+
+                    A heart so true.
+                    Our courage will pull us through.
+                    You teach me and ill teach you.
+
+                    Pokemon!
+
+                    (Gotta catch 'em all)x4
+
+                    Yeah!
+
+                    Pokemon!
+
+                    It's you and me
+                    I know it's my destiny
+
+                    Pokemon!
+
+                    Oh, your my best friend,
+                    in a world we must defend.
+
+                    Pokemon!
+
+                    A heart so true.
+                    Our courage will pull us through.
+                    You teach me and ill teach you.*/
+            }
         }
 
         /// <summary>
