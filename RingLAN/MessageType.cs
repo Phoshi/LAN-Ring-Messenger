@@ -4,7 +4,7 @@
         IdentResponse,
         Logout,
         Acknowledge,
-        NotAcknowledge,
+        NotAcknowledgable,
         Message,
     }
 }
