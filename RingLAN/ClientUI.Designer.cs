@@ -42,7 +42,8 @@
             this.RecievedMessagesBox.Location = new System.Drawing.Point(13, 38);
             this.RecievedMessagesBox.Multiline = true;
             this.RecievedMessagesBox.Name = "RecievedMessagesBox";
-            this.RecievedMessagesBox.Size = new System.Drawing.Size(437, 383);
+            this.RecievedMessagesBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.RecievedMessagesBox.Size = new System.Drawing.Size(437, 355);
             this.RecievedMessagesBox.TabIndex = 0;
             this.RecievedMessagesBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.RecievedMessagesBox_KeyDown);
             // 

@@ -95,11 +95,13 @@ namespace RingLAN {
             Message message = args.Message;
             switch (message.Type) {
                 case MessageType.Login:
-                    DisplayStatusMessage("Ident probably taken! Try again!");
+                    DisplayStatusMessage("Either ident taken or network failure! Try again!");
                     this.Invoke((Action)(() => RecievedMessagesBox.Enabled = false));
                     break;
                 case MessageType.Message:
                     DisplayStatusMessage("Message '{0}' to {1} send failed!".With(message.Payload, message.Recipient));
+                    DisplayStatusMessage("Assuming {0} is offline.".With(message.Recipient));
+                    this.Invoke((Action) HandleLogin);
                     break;
 
             }
@@ -255,7 +257,12 @@ namespace RingLAN {
         /// <param name="message">Message object to show</param>
         private void DisplayRecievedMessage(Message message) {
             if (message == _lastRecievedMessage) {
-                DisplayStatusMessage("Potential Packet Duplication detected");
+                if (message.SenderAddress == _client.Address) {
+                    DisplayStatusMessage("Delivery failed, resending...");
+                }
+                else {
+                    DisplayStatusMessage("Potential Packet Duplication detected");
+                }
             }
             else if (_lastRecievedMessage.SenderAddress == message.SenderAddress && _lastRecievedMessage.Type == MessageType.Message &&
                 (DateTime.UtcNow - _lastRecievedOn).TotalSeconds < 5) {
@@ -266,8 +273,9 @@ namespace RingLAN {
             AddText(" -{0} -> {1}- {2}".With(message.Sender, message.Recipient, message.Payload));
             if (message.SenderAddress != _client.Address) {
                 this.Invoke((Action) (() => {
+                                          Image horse = Names.GetImage(message.SenderAddress);
                                           Notifier notifier = new Notifier(notificationOptions, "New Message", message.Payload,
-                                                                           "{0} -> {1}".With(message.Sender, message.Recipient));
+                                                                           "{0} -> {1}".With(message.Sender, message.Recipient), horse);
                                           notifier.parentForm = this;
                                           notifier.Show();
                                       }));
@@ -275,7 +283,7 @@ namespace RingLAN {
         }
 
         private void DisplayLoginMessage(Message message) {
-            if (message.SenderAddress != _client.Address && _knownClients.Contains(message.SenderAddress)) {
+            if (message.Type == MessageType.Login && message.SenderAddress != _client.Address && _knownClients.Contains(message.SenderAddress)) {
                 DisplayStatusMessage("Login collision for {0} detected!".With(message.Sender));
                 return;
             }
@@ -306,6 +314,7 @@ namespace RingLAN {
                 }
                 _knownClients.Remove(message.SenderAddress);
                 AddText(" > {0} has signed out!".With(message.Sender));
+                Names.DelUser(message.SenderAddress);
             }
         }
     }
