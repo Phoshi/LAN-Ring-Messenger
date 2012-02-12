@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Extensions;
@@ -50,8 +51,11 @@ namespace RingLAN {
                 return null;
             }
             string name = GetName(address, false);
-            Image horse = Image.FromFile(@"Horses\{0}.png".With(name));
-            return horse;
+            if (File.Exists(@"Horses\{0}.png".With(name))) {
+                Image horse = Image.FromFile(@"Horses\{0}.png".With(name));
+                return horse;
+            }
+            return null;
         }
     }
 }
