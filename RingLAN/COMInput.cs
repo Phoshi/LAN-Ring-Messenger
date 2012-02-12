@@ -124,6 +124,8 @@ namespace RingLAN {
         /// </summary>
         public event MessageRecievedHandler Recieved;
 
+        public event MessageRecievedHandler Failed;
+
         //
         //Private Methods and Events
         //
@@ -137,6 +139,21 @@ namespace RingLAN {
                 Recieved(this, message);
             }
         }
+
+        /// <summary>
+        /// Raises a Message Failed event for when sending was impossible
+        /// </summary>
+        /// <param name="args">The MessageEventArgs object wrapping the Message that failed</param>
+        public void OnMessageFailed(MessageEventArgs args) {
+            if (Failed != null) {
+                Failed(this, args);
+            }
+        }
+
+        /// <summary>
+        /// Raises a Message Recieved event
+        /// </summary>
+        /// <param name="message">The message object to raise</param>
         private void OnMessageRecieved(Message message) {
             MessageEventArgs args = new MessageEventArgs(message);
             OnMessageRecieved(args);
@@ -170,6 +187,8 @@ namespace RingLAN {
             while (!_closed) {
                 IEnumerable<Pending> messages;
                 lock (this) {
+                    List<Pending> failedItems = _pending.Where(item => item.SendCount > 5).ToList();
+                    failedItems.ForEach(item => OnMessageFailed(new MessageEventArgs(item.Message)));
                     _pending = _pending.Where(item => item.SendCount <= 5).ToList();
                     messages =
                         _pending.Where(item => item.LastSend == DateTime.MinValue || item.LastSend < DateTime.UtcNow.AddSeconds(-2)).OrderByDescending(
@@ -196,11 +215,22 @@ namespace RingLAN {
             int recievedBytes = 0;
             while (recievedBytes <= 15) {
                 byte character = getChar();
-                if (character == '{') {
-                    recievedBytes = 0;
-                }
                 buffer[recievedBytes] = character;
                 recievedBytes++;
+                if (recievedBytes == 16 && (buffer.Last() != '}' || buffer.First() != '{')) {
+                    Logger.Log("Recieved packet, but structure is corrupt. Attempting to recover.", _parent.DisplayAddress);
+                    if (buffer.Any(item => item == '{')) {
+                        int startIndex = buffer.ToList().IndexOf((byte)'{');
+                        byte[] tempBuffer = new byte[16];
+                        Array.Copy(buffer, startIndex, tempBuffer, 0, buffer.Length - startIndex);
+                        buffer = tempBuffer;
+                        recievedBytes = buffer.Length - startIndex;
+                    }
+                    else {
+                        recievedBytes = 0;
+                    }
+
+                }
             }
             Message newMessage = new Message(buffer);
             if (!MessageChecker.Check(newMessage)) {
