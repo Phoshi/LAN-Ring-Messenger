@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO.Ports;
 using System.Threading;
 using Extensions;
@@ -17,11 +15,11 @@ namespace RingLAN {
         //Private Class Variables
         //
         
-        private SerialPort _port;
+        private readonly SerialPort _port;
         private Client _parent;
         private List<Pending> _pending = new List<Pending>();
-        private bool _closed;
-        private Thread readThread, writeThread;
+        private readonly Thread readThread;
+        private readonly Thread writeThread;
 
         /// <summary>
         /// Gets and sets the client object tied to this COMInput
@@ -34,9 +32,7 @@ namespace RingLAN {
         /// <summary>
         /// Returns whether the port is closed.
         /// </summary>
-        public bool Closed {
-            get { return _closed; }
-        }
+        public bool Closed { get; private set; }
 
         //
         //Constructors
@@ -123,7 +119,7 @@ namespace RingLAN {
             if (_port != null) {
                 _port.Close();
             }
-            _closed = true;
+            Closed = true;
             readThread.Abort();
             writeThread.Abort();
         }
@@ -172,7 +168,7 @@ namespace RingLAN {
         /// Main loop that recieves new messages and raises events where appropriate
         /// </summary>
         private void messageLoop() {
-            while (!_closed) {
+            while (!Closed) {
                 Message newMessage = getData();
                 if (newMessage == null) { //Packet was corrupt, should have already requested a resend.
                     continue;
@@ -193,7 +189,7 @@ namespace RingLAN {
         /// Main loop that sends and resends messages
         /// </summary>
         private void sendLoop() {
-            while (!_closed) {
+            while (!Closed) {
                 IEnumerable<Pending> messages;
                 lock (this) {
                     List<Pending> failedItems = _pending.Where(item => item.SendCount > 5).ToList();

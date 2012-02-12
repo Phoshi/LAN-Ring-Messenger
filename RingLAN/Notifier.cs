@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -12,16 +9,16 @@ using System.Windows.Forms;
 
 namespace ToastNotifier {
     public partial class Notifier : Form {
-        private string title = null;
-        private string description = null;
-        private Image image = null;
+        private readonly string title;
+        private readonly string description;
+        private readonly Image image;
         private bool goingUp = true;
-        private string category = null;
+        private readonly string category;
         private int heightToRiseTo;
-        public Form parentForm = null;
-        private int startTickCount;
+        public Form parentForm;
+        private readonly int startTickCount;
         private int newHeightToRiseTo = -1;
-        private NotifierOptions options;
+        private readonly NotifierOptions options;
 
         public Notifier(NotifierOptions newOptions, string notifierTitle, string notifierDescription, string notifierCategory, Image notifierImage = null, int notifierheightToRiseTo = -1) {
             InitializeComponent();
@@ -39,12 +36,7 @@ namespace ToastNotifier {
             Color magicPink = Color.FromArgb(255, 0, 255);
             this.BackColor = magicPink;
             this.TransparencyKey = magicPink;
-            if (notifierheightToRiseTo == -1) {
-                heightToRiseTo = Screen.PrimaryScreen.WorkingArea.Bottom;
-            }
-            else {
-                heightToRiseTo = notifierheightToRiseTo;
-            }
+            heightToRiseTo = notifierheightToRiseTo == -1 ? Screen.PrimaryScreen.WorkingArea.Bottom : notifierheightToRiseTo;
 
             int textStartingPoint = (image == null || !options.showImage) ? 10 : 300;
             int descriptionStartingHeight = title == null ? 10 : TextRenderer.MeasureText(title, options.titleFont).Height + 10;
@@ -88,10 +80,9 @@ namespace ToastNotifier {
                 //(h*nw)/w = nh
                 //h*nw = nh * w
                 //nw = (nh * w)/h
-                int newWidth, newHeight, startingHeight;
-                startingHeight = 0;
-                newWidth = 300;
-                newHeight = (int)((double)(image.Height * newWidth) / image.Width);
+                int startingHeight = 0;
+                int newWidth = 300;
+                int newHeight = (int)((double)(image.Height * newWidth) / image.Width);
                 if (newHeight > this.Height) {
                     int tHeight = newHeight;
                     int tWidth = newWidth;
@@ -131,7 +122,7 @@ namespace ToastNotifier {
         static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
         [StructLayout(LayoutKind.Sequential)]
         struct LASTINPUTINFO {
-            public static readonly int SizeOf = Marshal.SizeOf(typeof(LASTINPUTINFO));
+            private static readonly int SizeOf = Marshal.SizeOf(typeof(LASTINPUTINFO));
 
             [MarshalAs(UnmanagedType.U4)]
             public int cbSize;
@@ -177,7 +168,7 @@ namespace ToastNotifier {
             }
         }
 
-        static char[] splitChars = new char[] { ' ', '-', '\t' };
+        static readonly char[] splitChars = new[] { ' ', '-', '\t' };
 
         private static string WordWrap(string wrapString, int width, Font font) {
             string[] words = Explode(wrapString, splitChars); //Like String.Split, but handles dashes a bit more fancy
@@ -185,14 +176,17 @@ namespace ToastNotifier {
             int currentLineLength = 0;
             StringBuilder stringBuilder = new StringBuilder(); //Needs more StringBuilding
 
-            for (int i = 0; i < words.Length; i++) { //Iterate through each exploded word
-                string word = words[i]; //Copy the current word into a local variable
-                if (currentLineLength + TextRenderer.MeasureText(word, font).Width > width) { //If the new width is going to be longer than the allowable line length
-                    if (currentLineLength > 0) { //If this isn't at the start of a new line
+            for (int i = 0; i < words.Length; i++) {
+                string word = words[i];
+                if (currentLineLength + TextRenderer.MeasureText(word, font).Width > width) {
+                    //If the new width is going to be longer than the allowable line length
+                    if (currentLineLength > 0) {
+                        //If this isn't at the start of a new line
                         stringBuilder.Append(Environment.NewLine); //add a linebreak
                         currentLineLength = 0; //and go down one line!
                     }
-                    while (word.Length > width) { //If this is at the start of a new line, we're in trouble - the word is too long to display
+                    while (word.Length > width) {
+                        //If this is at the start of a new line, we're in trouble - the word is too long to display
                         stringBuilder.Append(word.Substring(0, width - 1) + "-"); //So cut it down to size a little
                         word = word.Substring(width - 1);
 
@@ -264,7 +258,7 @@ namespace ToastNotifier {
         }
 
     }
-    [Serializable()]
+    [Serializable]
     public class NotifierOptions : ISerializable {
         public bool enabled;
         public bool showDescription;
@@ -276,7 +270,7 @@ namespace ToastNotifier {
         public Pen borderPen;
         public SolidBrush backgroundBrush;
         public SolidBrush foregroundBrush;
-        public bool previewMode = false;
+        public bool previewMode;
 
         public NotifierOptions(bool newEnabled = true, int newtimeout = 5, bool newShowDescription = true,
             bool newShowImage = true, bool newShowNewChapters = true,

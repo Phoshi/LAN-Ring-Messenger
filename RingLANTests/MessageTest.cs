@@ -67,10 +67,10 @@ namespace RingLANTests
         ///</summary>
         [TestMethod()]
         public void MessageConstructorTest() {
-            string testPacket = "{TFD1234567890\0}";
-            byte[] data = ASCIIEncoding.ASCII.GetBytes(testPacket);
+            const string testPacket = "{TFD1234567890\0}";
+            byte[] data = Encoding.ASCII.GetBytes(testPacket);
             Message target = new Message(data);
-            string laterData = ASCIIEncoding.ASCII.GetString(target.ToByteArray(false));
+            string laterData = Encoding.ASCII.GetString(target.ToByteArray(false));
             if (laterData != testPacket) {
                 Assert.Fail("Packets are different: {0} != {1}".With(laterData, testPacket));
             }

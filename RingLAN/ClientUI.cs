@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using Extensions;
 using ToastNotifier;
@@ -14,15 +10,15 @@ namespace RingLAN {
         /// <summary>
         /// Holds the reference to this UI's underlying client object
         /// </summary>
-        private Client _client;
+        private readonly Client _client;
 
         private bool _loggedIn;
-        private List<char> _knownClients = new List<char>();
+        private readonly List<char> _knownClients = new List<char>();
 
         private Message _lastRecievedMessage;
         private DateTime _lastRecievedOn;
 
-        private NotifierOptions notificationOptions = new NotifierOptions();
+        private readonly NotifierOptions notificationOptions = new NotifierOptions();
 
         /// <summary>
         /// Provides access to the underlying Client object
@@ -257,12 +253,9 @@ namespace RingLAN {
         /// <param name="message">Message object to show</param>
         private void DisplayRecievedMessage(Message message) {
             if (message == _lastRecievedMessage) {
-                if (message.SenderAddress == _client.Address) {
-                    DisplayStatusMessage("Delivery failed, resending...");
-                }
-                else {
-                    DisplayStatusMessage("Potential Packet Duplication detected");
-                }
+                DisplayStatusMessage(message.SenderAddress == _client.Address
+                                         ? "Delivery failed, resending..."
+                                         : "Potential Packet Duplication detected");
             }
             else if (_lastRecievedMessage.SenderAddress == message.SenderAddress && _lastRecievedMessage.Type == MessageType.Message &&
                 (DateTime.UtcNow - _lastRecievedOn).TotalSeconds < 5) {
@@ -275,8 +268,8 @@ namespace RingLAN {
                 this.Invoke((Action) (() => {
                                           Image horse = Names.GetImage(message.SenderAddress);
                                           Notifier notifier = new Notifier(notificationOptions, "New Message", message.Payload,
-                                                                           "{0} -> {1}".With(message.Sender, message.Recipient), horse);
-                                          notifier.parentForm = this;
+                                                                           "{0} -> {1}".With(message.Sender, message.Recipient), horse)
+                                                              {parentForm = this};
                                           notifier.Show();
                                       }));
             }

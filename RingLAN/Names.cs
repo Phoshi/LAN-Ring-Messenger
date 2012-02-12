@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Text;
 using Extensions;
 
 namespace RingLAN {
@@ -16,8 +14,8 @@ namespace RingLAN {
                                                           "Yellowquiet",
                                                           "Squiggletail",
                                                       };
-        private static Dictionary<char, string> assoc = new Dictionary<char, string>();
-        private static Dictionary<string, Image> images = new Dictionary<string, Image> {
+        private static readonly Dictionary<char, string> assoc = new Dictionary<char, string>();
+        private static readonly Dictionary<string, Image> images = new Dictionary<string, Image> {
                                                                                             {"Magichorn", Properties.Resources.magichorn},
                                                                                             {"Speedycloud", Properties.Resources.speedycloud},
                                                                                             {"Song Smile", Properties.Resources.song_smile},
@@ -40,18 +38,16 @@ namespace RingLAN {
 
                 assoc[address] = newName;
             }
-            if (!withAddress) {
-                return assoc[address];
-            }
-            return "{0} ({1})".With(assoc[address], address);
+            return withAddress ? "{0} ({1})".With(assoc[address], address) : assoc[address];
         }
 
         public static void DelUser(char address) {
-            if (assoc.ContainsKey(address)) {
-                string name = assoc[address];
-                _names.Add(name);
-                assoc.Remove(address);
+            if (!assoc.ContainsKey(address)) {
+                return;
             }
+            string name = assoc[address];
+            _names.Add(name);
+            assoc.Remove(address);
         }
 
         public static Image GetImage(char address) {
@@ -59,10 +55,7 @@ namespace RingLAN {
                 return null;
             }
             string name = GetName(address, false);
-            if (images.ContainsKey(name)) {
-                return images[name];
-            }
-            return Properties.Resources.generic;
+            return images.ContainsKey(name) ? images[name] : Properties.Resources.generic;
         }
     }
 }

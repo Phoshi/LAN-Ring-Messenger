@@ -12,12 +12,12 @@ namespace RingLAN {
         //
         //Class variables
         //
-        private char _to;
-        private char _from;
-        private string _message = "";
-        private MessageType _type;
-        private byte _checksum;
-        private Dictionary<MessageType, char> _messageTypes = new Dictionary<MessageType, char> {
+        private readonly char _to;
+        private readonly char _from;
+        private readonly string _message = "";
+        private readonly MessageType _type;
+        private readonly byte _checksum;
+        private readonly Dictionary<MessageType, char> _messageTypes = new Dictionary<MessageType, char> {
                                                                                                       {MessageType.Login, 'L'},
                                                                                                       {MessageType.Logout, 'X'}, 
                                                                                                       {MessageType.IdentResponse, 'R'},
@@ -38,10 +38,7 @@ namespace RingLAN {
         /// </summary>
         public byte Checksum {
             get {
-                if (_checksum == 0) {
-                    return MessageChecker.GetChecksum(this);
-                }
-                return _checksum;
+                return _checksum == 0 ? MessageChecker.GetChecksum(this) : _checksum;
             }
         }
 
@@ -130,13 +127,13 @@ namespace RingLAN {
         /// Creates a new message object from the given packet.
         /// </summary>
         /// <param name="data">A byte array containing the packet data.</param>
-        public Message(byte[] data) {
+        public Message(IList<byte> data) {
             try {
                 _to = (char)data[1];
                 _from = (char)data[2];
                 _type = (from kvPair in _messageTypes where kvPair.Value == data[3] select kvPair.Key).FirstOrDefault();
                 byte[] payloadData = data.Skip(4).Take(10).ToArray();
-                _message = ASCIIEncoding.ASCII.GetString(payloadData).Trim('\0');
+                _message = Encoding.ASCII.GetString(payloadData).Trim('\0');
                 _checksum = data[14];
             }
             catch (Exception) {
@@ -244,12 +241,12 @@ namespace RingLAN {
             header.Append(_to);
             header.Append(_from);
             header.Append(_messageTypes[_type]);
-            byte[] headerBytes = ASCIIEncoding.ASCII.GetBytes(header.ToString());
+            byte[] headerBytes = Encoding.ASCII.GetBytes(header.ToString());
             Array.Copy(headerBytes, byteArray, headerBytes.Length);
-            byte[] payloadBytes = _message != null ? ASCIIEncoding.ASCII.GetBytes(_message) : new byte[10];
+            byte[] payloadBytes = _message != null ? Encoding.ASCII.GetBytes(_message) : new byte[10];
             Array.Copy(payloadBytes, 0, byteArray, 4, Math.Min(payloadBytes.Length, 10));
             byteArray[14] = computeChecksum ? MessageChecker.GetChecksum(this) : (byte)0;
-            byteArray[15] = ASCIIEncoding.ASCII.GetBytes("}")[0];
+            byteArray[15] = Encoding.ASCII.GetBytes("}")[0];
             return byteArray;
         }
 
@@ -258,10 +255,7 @@ namespace RingLAN {
         /// </summary>
         /// <returns>A string representing the message</returns>
         public override string ToString() {
-            if (_message == null) {
-                return "Packet type {0}".With(_messageTypes[_type]);
-            }
-            return _message;
+            return _message ?? "Packet type {0}".With(_messageTypes[_type]);
         }
 
         /// <summary>
@@ -275,10 +269,7 @@ namespace RingLAN {
             }
 
             Message other = (Message) obj;
-            if (other.ToByteArray().SequenceEqual(this.ToByteArray())) {
-                return true;
-            }
-            return false;
+            return other.ToByteArray().SequenceEqual(this.ToByteArray());
         }
 
         /// <summary>
