@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Extensions;
 
 namespace RingLAN {
     /// <summary>
-    /// A high-level message object that doesn't care about the low-level packet implementation one jot.
+    /// A high-level message object.
     /// </summary>
     public class Message {
         //
@@ -22,7 +23,7 @@ namespace RingLAN {
                                                                                                       {MessageType.IdentResponse, 'R'},
                                                                                                       {MessageType.Message, 'D'},
                                                                                                       {MessageType.Acknowledge, 'Y'},
-                                                                                                      {MessageType.NotAcknowledge, 'N'},
+                                                                                                      {MessageType.NotAcknowledgable, 'N'},
     };
 
         /// <summary>
@@ -52,10 +53,53 @@ namespace RingLAN {
         }
 
         /// <summary>
+        /// Gets the sender address
+        /// </summary>
+        public char SenderAddress {
+            get { return _from; }
+        }
+
+        /// <summary>
+        /// Gets the string representing the client the message is addressed to
+        /// </summary>
+        public string Recipient {
+            get { return new string(_to, 1); }
+        }
+
+        /// <summary>
+        /// Gets the address of the message
+        /// </summary>
+        public char Address {
+            get { return _to; }
+        }
+
+        /// <summary>
         /// Gets the packet payload
         /// </summary>
         public string Payload {
             get { return _message; }
+        }
+
+        //
+        // Properties to generate reply messages
+        //
+
+        /// <summary>
+        /// Generates a non-acknowledgable message for packet failure
+        /// </summary>
+        public Message NotAcknowledgable {
+            get {
+                return new Message(null, this._from, this._to, MessageType.NotAcknowledgable);
+            }
+        }
+
+        /// <summary>
+        /// Generates an acknowledge message for this messaage
+        /// </summary>
+        public Message Acknowledge {
+            get {
+                return new Message(null, this._from, this._to, MessageType.Acknowledge);
+            }
         }
 
         //
@@ -67,9 +111,13 @@ namespace RingLAN {
         /// <param name="message">The message text</param>
         /// <param name="recipient">The client ID to send to</param>
         /// <param name="type">The type of message to send</param>
-        public Message(string message, char recipient, MessageType type) {
+        public Message(string message, char recipient, char from, MessageType type) {
             _message = message;
+            if (_message !=null && _message.Length > 10) {
+                _message = _message.Substring(0, 10);
+            }
             _to = recipient;
+            _from = from;
             _type = type;
 
             if (type == MessageType.Login) {
@@ -84,9 +132,9 @@ namespace RingLAN {
         public Message(byte[] data) {
             _to = (char) data[1];
             _from = (char) data[2];
-            _type = (from kvPair in _messageTypes where kvPair.Value == data[3] select kvPair.Key).First();
+            _type = (from kvPair in _messageTypes where kvPair.Value == data[3] select kvPair.Key).FirstOrDefault();
             byte[] payloadData = data.Skip(4).Take(10).ToArray();
-            _message = ASCIIEncoding.ASCII.GetString(payloadData);
+            _message = ASCIIEncoding.ASCII.GetString(payloadData).Trim('\0');
             _checksum = data[14];
         }
 
@@ -113,7 +161,7 @@ namespace RingLAN {
             header.Append(_messageTypes[_type]);
             byte[] headerBytes = ASCIIEncoding.ASCII.GetBytes(header.ToString());
             Array.Copy(headerBytes, byteArray, headerBytes.Length);
-            byte[] payloadBytes = ASCIIEncoding.ASCII.GetBytes(_message);
+            byte[] payloadBytes = _message != null ? ASCIIEncoding.ASCII.GetBytes(_message) : new byte[10];
             Array.Copy(payloadBytes, 0, byteArray, 4, Math.Min(payloadBytes.Length, 10));
             byteArray[14] = computeChecksum ? MessageChecker.GetChecksum(this) : (byte)0;
             byteArray[15] = ASCIIEncoding.ASCII.GetBytes("}")[0];
@@ -123,9 +171,67 @@ namespace RingLAN {
         /// <summary>
         /// Returns a human-readable representation of the message suitable for displaying in some sort of UI.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A string representing the message</returns>
         public override string ToString() {
+            if (_message == null) {
+                return "Packet type {0}".With(_messageTypes[_type]);
+            }
             return _message;
+        }
+
+        /// <summary>
+        /// Returns equality
+        /// </summary>
+        /// <param name="obj">The object to compare</param>
+        /// <returns>True if the packets are equal</returns>
+        public override bool Equals(object obj) {
+            if (obj == null || GetType() != obj.GetType()) {
+                return false;
+            }
+
+            Message other = (Message) obj;
+            if (other.ToByteArray().SequenceEqual(this.ToByteArray())) {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Returns a hashcode for this object
+        /// </summary>
+        /// <returns>Hashcode</returns>
+        public override int GetHashCode() {
+            int hash = 13;
+            foreach (byte b in this.ToByteArray()) {
+                hash = (hash * 7) + b.GetHashCode();
+            }
+            return hash;
+        }
+
+        /// <summary>
+        /// Returns whether two objects are equal
+        /// </summary>
+        /// <param name="me">One object</param>
+        /// <param name="other">The other</param>
+        /// <returns>Equality</returns>
+        public static bool operator ==(Message me, Message other) {
+            if (ReferenceEquals(me, other)) {
+                return true;
+            }
+            if ((object)me == null || (object)other == null) {
+                return false;
+            }
+            return me.Equals(other);
+        }
+
+        /// <summary>
+        /// Returns whether two objects are not equal
+        /// </summary>
+        /// <param name="me">One object</param>
+        /// <param name="other">The other</param>
+        /// <returns>Not equality</returns>
+        public static bool operator !=(Message me, Message other) {
+            return !(me == other);
         }
     }
 }
