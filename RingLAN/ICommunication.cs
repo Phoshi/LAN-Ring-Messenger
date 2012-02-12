@@ -10,10 +10,23 @@ namespace RingLAN {
     /// </summary>
     public interface ICommunication {
         /// <summary>
+        /// Gets or sets the object's parent
+        /// </summary>
+        Client Parent { get; set; }
+        /// <summary>
         /// Sends a message object
         /// </summary>
         /// <param name="message">The object to send</param>
         void Send(Message message);
+        /// <summary>
+        /// Sends a message object without caring if it's recieved
+        /// </summary>
+        /// <param name="message">The object to send</param>
+        void PassOn(Message message);
+        /// <summary>
+        /// Performs shutdown.
+        /// </summary>
+        void Close();
         /// <summary>
         /// An event that fires when a new message comes in
         /// </summary>

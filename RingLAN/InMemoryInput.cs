@@ -3,13 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Extensions;
 
 namespace RingLAN {
     class InMemoryInput : COMInput {
         private List<byte> _buffer = new List<byte>();
+        private Client _parent;
+        private int quality = 9999;
 
-        public InMemoryInput(string dummyName) {
-            
+        public List<byte> Buffer {
+            get { return _buffer; }
+        }
+
+        private InMemoryInput _partner = null;
+
+        public InMemoryInput Partner {
+            get { return _partner; }
+            set { _partner = value; }
+        }
+
+        public InMemoryInput(string dummyName = "") {
+        }
+
+        public InMemoryInput(InMemoryInput partner) {
+            _partner = partner;
         }
 
         public override byte getChar() {
@@ -22,10 +39,27 @@ namespace RingLAN {
         }
 
         public override void putChars(byte[] toWrite) {
-            foreach (byte b in toWrite) {
-                Console.Write((char)b);
+            Random rng = new Random();
+            int failure1 = rng.Next(quality);
+            int failure2 = rng.Next(quality);
+
+            if (failure1 == 0) { //Failure!
+                Logger.Log("Corrupting packet {0}".With(new Message(toWrite).ToString()), "Failure");
+                int position = rng.Next(toWrite.Length);
+                toWrite[position] = (byte) (~toWrite[position]); 
             }
-            _buffer.AddRange(toWrite);
+
+            if (failure2 == 0) { //Critial Failure!
+                Logger.Log("Deleting Packet {0}".With(new Message(toWrite).ToString()), "Failure");
+                return;
+            }
+            Logger.Log("Sending Packet {0}".With(new Message(toWrite).ToString()), "In Memory Input");
+            if (_partner == null) {
+                _buffer.AddRange(toWrite);
+            }
+            else {
+                _partner.Buffer.AddRange(toWrite);
+            }
         }
     }
 }
