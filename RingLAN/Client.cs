@@ -87,6 +87,7 @@ namespace RingLAN {
             _comms = comms;
             comms.Parent = this;
             comms.Recieved += RecieveMessage;
+            comms.Failed += FailedMessage;
         }
 
         //
@@ -185,7 +186,20 @@ namespace RingLAN {
                     OnActionableMessageRecieved(args);
                 }
             }
+        }
 
+        /// <summary>
+        /// Handles message send failure.
+        /// </summary>
+        /// <param name="sender">The communications object that raised the error</param>
+        /// <param name="args">The message that failed</param>
+        private void FailedMessage(object sender, MessageEventArgs args) {
+            Message message = args.Message;
+            if (message.Type == MessageType.Login) {
+                if (!LoggedIn) {
+                    _address = ' ';
+                }
+            }
         }
     }
 }
