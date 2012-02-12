@@ -46,12 +46,21 @@ namespace RingLAN {
         /// Initialises the COMInput and readies it to handle data
         /// </summary>
         /// <param name="port">The port string to attempt to bind to</param>
-        public COMInput(string port) {
+        public COMInput(string port){
             _port = new SerialPort(port,    //Port Name
                 9600,                       //Baud Rate
                 Parity.Even,                //Parity
                 7,                          //Data bits
                 StopBits.One);              //Stop bits
+            _port.Open();
+
+            this.Recieved += RecieveMessage;
+
+            readThread = new Thread(messageLoop);
+            readThread.Start();
+
+            writeThread = new Thread(sendLoop);
+            writeThread.Start();
         }
 
         /// <summary>
@@ -172,8 +181,8 @@ namespace RingLAN {
                     PassOn(newMessage);
                     continue;
                 }
-                if (newMessage.Address != _parent.Address) {
-                    //If it's not for me, send it on
+                if (newMessage.Address != _parent.Address && newMessage.SenderAddress != _parent.Address) {
+                    //If it's not for me or from me, send it on
                     PassOn(newMessage);
                 }
                 OnMessageRecieved(newMessage);
