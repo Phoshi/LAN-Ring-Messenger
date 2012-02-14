@@ -267,7 +267,7 @@ namespace RingLAN {
             if (message.SenderAddress != _client.Address) {
                 this.Invoke((Action) (() => {
                                           Image horse = Names.GetImage(message.SenderAddress);
-                                          Notifier notifier = new Notifier(notificationOptions, "New Message", message.Payload,
+                                          Notifier notifier = new Notifier(notificationOptions, "New Message from {0}".With(message.Sender), message.Payload,
                                                                            "{0} -> {1}".With(message.Sender, message.Recipient), horse)
                                                               {parentForm = this};
                                           notifier.Show();
