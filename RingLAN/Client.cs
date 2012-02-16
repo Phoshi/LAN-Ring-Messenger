@@ -46,7 +46,7 @@ namespace RingLAN {
         public bool LoggedIn {
             get { return _loggedIn; }
             set {
-                if (!value) {
+                if (!value && _loggedIn) {
                     Communications.PassOn(new Message(null, Address, Address, MessageType.Logout));
                 }
             }
