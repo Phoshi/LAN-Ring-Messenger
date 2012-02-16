@@ -75,6 +75,8 @@ namespace RingLAN {
             try {
                 ICommunication comms = new COMInput(PhysicalPortSelect.Text);
                 ClientUI client = new ClientUI(comms);
+                client.FormClosed += client_FormClosed;
+                openForms++;
                 client.Show();
                 this.Hide();
             }
