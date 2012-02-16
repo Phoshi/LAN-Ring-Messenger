@@ -255,6 +255,11 @@ namespace RingLAN {
         /// </summary>
         /// <returns>A string representing the message</returns>
         public override string ToString() {
+            StringBuilder packet = new StringBuilder();
+            foreach (byte b in ToByteArray()){
+                packet.Append((char)b);
+            }
+            return packet.ToString();
             return _message ?? "Packet type {0}".With(_messageTypes[_type]);
         }
 
