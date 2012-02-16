@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO.Ports;
 using System.Threading;
 using Extensions;
+using System.IO;
 
 namespace RingLAN {
     /// <summary>
@@ -81,7 +82,13 @@ namespace RingLAN {
         /// </summary>
         /// <returns>A byte representing the current character</returns>
         public virtual byte getChar() {
-            int readChar = _port.ReadChar();
+            int readChar;
+            try{
+                readChar = _port.ReadChar();
+            }
+            catch (IOException){
+                return 0;
+            }
             return (byte)readChar;
         }
 
@@ -225,6 +232,7 @@ namespace RingLAN {
             int recievedBytes = 0;
             while (recievedBytes <= 15) {
                 byte character = getChar();
+                Logger.Log(character);
                 buffer[recievedBytes] = character;
                 recievedBytes++;
                 if (recievedBytes == 16 && (buffer.Last() != '}' || buffer.First() != '{')) {
@@ -268,6 +276,7 @@ namespace RingLAN {
                     break;
                 case MessageType.Message:
                     if (message.Address == _parent.Address) {
+                        Logger.Log("Recieved message '{0}' from {1}".With(message.ToString(), message.Sender), _parent.DisplayAddress);
                         Logger.Log("Responding to '{0}' with Ack".With(message.ToString()), _parent.DisplayAddress);
                         PassOn(message.Acknowledge);
                     }
