@@ -11,6 +11,7 @@
         /// <returns>Integrity - true for valid, false for invalid</returns>
         public static bool Check(Message message) {
             byte correctChecksum = GetChecksum(message);
+            //return true;
             return correctChecksum == message.Checksum;
         }
 
@@ -25,7 +26,7 @@
             foreach (byte b in byteArray) {
                 total += b;
             }
-            return (byte) (~(total % 128));
+            return ((byte) ((total % 128)));
         }
     }
 }
