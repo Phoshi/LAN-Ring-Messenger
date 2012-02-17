@@ -26,7 +26,7 @@
             foreach (byte b in byteArray) {
                 total += b;
             }
-            return ((byte) ((total % 128)));
+            return ((byte) (~(total % 128)));
         }
     }
 }

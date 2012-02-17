@@ -46,8 +46,8 @@ namespace RingLAN {
         public COMInput(string port){
             _port = new SerialPort(port,    //Port Name
                 9600,                       //Baud Rate
-                Parity.Even,                //Parity
-                7,                          //Data bits
+                Parity.None,                //Parity
+                8,                          //Data bits
                 StopBits.One);              //Stop bits
             _port.Open();
 
