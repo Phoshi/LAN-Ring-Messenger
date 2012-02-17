@@ -1,10 +1,12 @@
 ﻿using System.IO;
 using Extensions;
+using System;
 
 namespace RingLAN {
     static class Logger {
         private const string path = "output.log";
         private const string rawPath = "packets.log";
+        public static bool Logging = true;
 
         static Logger() {
             File.Delete(path);
@@ -12,6 +14,10 @@ namespace RingLAN {
         }
 
         public static void Log(string text, string section = null) {
+            if (!Logging){
+                Console.WriteLine("{0}: {1}".With(section, text.Replace('\0', ' ')));
+                return;
+            }
             try {
                 StreamWriter logger = new StreamWriter(path, true);
                 if (section == null) {
@@ -27,6 +33,9 @@ namespace RingLAN {
         }
         public static void Log(byte rawByte)
         {
+            if (!Logging){
+                return;
+            }
             try
             {
                 StreamWriter logger = new StreamWriter(rawPath, true);
