@@ -168,39 +168,33 @@ namespace RingLAN {
                 if (InputBox.Text.Length == 0) {
                     return;
                 }
-                _client.Address = InputBox.Text[0];
+                char loginID = InputBox.Text.ToUpper()[0];
+                if (!char.IsUpper(loginID)){
+                    DisplayStatusMessage("Please insert a letter!");
+                    return;
+                }
+                _client.Address = loginID;
                 DisplayStatusMessage("Attempting login with {0}".With(_client.DisplayAddress));
                 RecievedMessagesBox.Enabled = true;
                 InputBox.Text = "";
                 return;
             }
             string messagetext = InputBox.Text;
-            List<char> targets = new List<char>();
-            if (RecipientSelectBox.Text == @"All") {
-                targets.AddRange(_client.Clients);
+            char recipient = (char) 0;
+            if (messagetext.Length > 3 && messagetext[1] == ':' && _client.Clients.Contains(messagetext.ToUpper()[0])) {
+                recipient = messagetext[0];
+                messagetext = messagetext.Substring(3);
             }
-            else {
-                char recipient = (char) 0;
-                if (messagetext.Length > 3 && messagetext[1] == ':' && _client.Clients.Contains(messagetext[0])) {
-                    recipient = messagetext[0];
-                    messagetext = messagetext.Substring(3);
-                }
-                else if (RecipientSelectBox.Text.Length == 1) {
-                    recipient = char.Parse(RecipientSelectBox.Text);
-                }
-                if (recipient != (char) 0) {
-                    targets.Add(recipient);
-                }
+            else if (RecipientSelectBox.Text.Length == 1) {
+                recipient = char.Parse(RecipientSelectBox.Text);
             }
-            if (targets.Count == 0) {
+            if (recipient == 0) {
                 DisplayStatusMessage("Please select a recipient!");
                 return;
             }
             while (messagetext.Length > 0) {
-                foreach (char recipient in targets) {
-                    Message message = new Message(messagetext, recipient, _client.Address, MessageType.Message);
-                    OnSendMessage(message);
-                }
+                Message message = new Message(messagetext, recipient, _client.Address, MessageType.Message);
+                OnSendMessage(message);
                 if (messagetext.Length > 10) {
                     messagetext = messagetext.Substring(10);
                 }
@@ -217,7 +211,6 @@ namespace RingLAN {
 
         private void HandleLogin() {
             RecipientSelectBox.Items.Clear();
-            RecipientSelectBox.Items.Add("All");
             foreach (char client in _client.Clients) {
                 RecipientSelectBox.Items.Add(client);
             }
