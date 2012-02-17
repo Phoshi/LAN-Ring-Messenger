@@ -40,6 +40,7 @@ namespace RingLAN {
         }
 
         private void VirtualLaunchButton_Click(object sender, EventArgs e) {
+            Logger.Logging = false;
             int numClients = int.Parse(VirtualItemsSelect.Text);
             int lineQuality = (int) NoisePotential.Value;
             Logger.Log("Setting up virtual ring {0} long".With(numClients));
