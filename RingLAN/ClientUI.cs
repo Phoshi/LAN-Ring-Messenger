@@ -214,6 +214,7 @@ namespace RingLAN {
             foreach (char client in _client.Clients) {
                 RecipientSelectBox.Items.Add(client);
             }
+            RecipientSelectBox.SelectedIndex = 0;
         }
 
         //
