@@ -152,7 +152,9 @@ namespace RingLAN {
                 if (!_identifiedUsers.Contains(message.Address)) {
                     _identifiedUsers.Add(message.Address);
                 }
-                Communications.PassOn(new Message(null, message.Address, this.Address, MessageType.IdentResponse));
+                if (message.SenderAddress != Address) {
+                    Communications.PassOn(new Message(null, message.Address, this.Address, MessageType.IdentResponse));
+                }
                 OnActionableMessageRecieved(args);
             }
             if (message.Type == MessageType.Logout) {
