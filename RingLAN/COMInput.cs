@@ -81,7 +81,7 @@ namespace RingLAN {
         /// Grab a single character over the COM port
         /// </summary>
         /// <returns>A byte representing the current character</returns>
-        public virtual byte getChar() {
+        public virtual byte getByte() {
             int readChar;
             try{
                 readChar = _port.ReadChar();
@@ -137,6 +137,8 @@ namespace RingLAN {
         public event MessageRecievedHandler Recieved;
 
         public event MessageRecievedHandler Failed;
+
+        public event CharacterRecievedHandler CharacterRecieved;
 
         //
         //Private Methods and Events
@@ -241,7 +243,7 @@ namespace RingLAN {
             byte[] buffer = new byte[16];
             int recievedBytes = 0;
             while (recievedBytes <= 15) {
-                byte character = getChar();
+                byte character = getByte();
                 OnCharacterRecieved((char)character);
                 Logger.Log(character);
                 buffer[recievedBytes] = character;

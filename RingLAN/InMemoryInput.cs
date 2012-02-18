@@ -26,7 +26,7 @@ namespace RingLAN {
             _partner = partner;
         }
 
-        public override byte getChar() {
+        public override byte getByte() {
             while (_buffer.Count == 0) {
                 Thread.Sleep(100);
             }
