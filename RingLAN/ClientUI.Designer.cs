@@ -94,11 +94,11 @@
             // 
             this.DebugModeCheck.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.DebugModeCheck.AutoSize = true;
-            this.DebugModeCheck.Location = new System.Drawing.Point(334, 13);
+            this.DebugModeCheck.Location = new System.Drawing.Point(362, 13);
             this.DebugModeCheck.Name = "DebugModeCheck";
-            this.DebugModeCheck.Size = new System.Drawing.Size(116, 17);
+            this.DebugModeCheck.Size = new System.Drawing.Size(88, 17);
             this.DebugModeCheck.TabIndex = 5;
-            this.DebugModeCheck.Text = "Promiscuous Mode";
+            this.DebugModeCheck.Text = "Debug Mode";
             this.DebugModeCheck.UseVisualStyleBackColor = true;
             this.DebugModeCheck.CheckedChanged += new System.EventHandler(this.DebugModeCheck_CheckedChanged);
             // 

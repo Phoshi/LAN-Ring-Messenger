@@ -163,6 +163,16 @@ namespace RingLAN {
         }
 
         /// <summary>
+        /// Raises a character recieved event 
+        /// </summary>
+        /// <param name="character">The recieved character</param>
+        public void OnCharacterRecieved(char character) {
+            if (CharacterRecieved != null) {
+                CharacterRecieved(this, character);
+            }
+        }
+
+        /// <summary>
         /// Raises a Message Recieved event
         /// </summary>
         /// <param name="message">The message object to raise</param>
@@ -232,6 +242,7 @@ namespace RingLAN {
             int recievedBytes = 0;
             while (recievedBytes <= 15) {
                 byte character = getChar();
+                OnCharacterRecieved((char)character);
                 Logger.Log(character);
                 buffer[recievedBytes] = character;
                 recievedBytes++;

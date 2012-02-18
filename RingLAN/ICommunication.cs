@@ -1,5 +1,7 @@
 ﻿namespace RingLAN {
     public delegate void MessageRecievedHandler(object sender, MessageEventArgs args);
+
+    public delegate void CharacterRecievedHandler(object sender, char character);
     /// <summary>
     /// The interface to all comms methods, whether over RS-232, USB, virtual, et cetera.
     /// </summary>
@@ -29,6 +31,10 @@
         /// <summary>
         /// An Event that fires when a message could not be sent
         /// </summary>
-        event MessageRecievedHandler Failed; 
+        event MessageRecievedHandler Failed;
+        /// <summary>
+        /// An event that fires whenever a character is recieved.
+        /// </summary>
+        event CharacterRecievedHandler CharacterRecieved;
     }
 }

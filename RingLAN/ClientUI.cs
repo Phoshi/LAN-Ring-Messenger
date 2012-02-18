@@ -37,8 +37,11 @@ namespace RingLAN {
             _client = new Client(comms);
             _client.ActionableMessageRecieved += MessageRecieved;
             _client.Communications.Failed += MessageSendFailed;
+            _client.Communications.CharacterRecieved += Communications_CharacterRecieved;
             SendMessage += _client.SendMessage;
         }
+
+
 
         //
         // Event Handlers
@@ -80,6 +83,17 @@ namespace RingLAN {
             }
             _lastRecievedMessage = e.Message;
             _lastRecievedOn = DateTime.UtcNow;
+        }
+
+        /// <summary>
+        /// Event handler for new character reciveded
+        /// </summary>
+        /// <param name="sender">The communications object that raised the event</param>
+        /// <param name="character">The recieved character</param>
+        void Communications_CharacterRecieved(object sender, char character) {
+            if (DebugModeCheck.Checked) {
+                RecievedMessagesBox.Invoke((Action)(() => RecievedMessagesBox.Text += character));
+            }
         }
 
         /// <summary>
@@ -226,11 +240,18 @@ namespace RingLAN {
         /// </summary>
         /// <param name="text">The text to add</param>
         private void AddText(string text) {
-            RecievedMessagesBox.Invoke((Action)(() => RecievedMessagesBox.AppendText(text + "\r\n")));
+            if (!DebugModeCheck.Checked) {
+                RecievedMessagesBox.Invoke((Action) (() => RecievedMessagesBox.AppendText(text + "\r\n")));
+            }
         }
 
+        /// <summary>
+        /// Trims the trailing whitespace from the textbox. Useful for continuing previous lines.
+        /// </summary>
         private void TrimMessageBox() {
-            RecievedMessagesBox.Invoke((Action) (() => RecievedMessagesBox.Text = RecievedMessagesBox.Text.TrimEnd(new[] {'\r', '\n'})));
+            if (!DebugModeCheck.Checked) {
+                RecievedMessagesBox.Invoke((Action) (() => RecievedMessagesBox.Text = RecievedMessagesBox.Text.TrimEnd(new[] {'\r', '\n'})));
+            }
         }
 
         /// <summary>
