@@ -49,6 +49,7 @@ namespace RingLAN {
                 Parity.None,                //Parity
                 8,                          //Data bits
                 StopBits.One);              //Stop bits
+            _port.Handshake = Handshake.RequestToSend;
             _port.Open();
 
             this.Recieved += RecieveMessage;
@@ -82,14 +83,14 @@ namespace RingLAN {
         /// </summary>
         /// <returns>A byte representing the current character</returns>
         public virtual byte getByte() {
-            int readChar;
+            byte readChar;
             try{
-                readChar = _port.ReadChar();
+                readChar = (byte)_port.ReadByte();
             }
             catch (IOException){
                 return 0;
             }
-            return (byte)readChar;
+            return readChar;
         }
 
         /// <summary>
