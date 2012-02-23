@@ -259,7 +259,7 @@ namespace RingLAN {
         /// </summary>
         /// <param name="message">The string containing the message</param>
         private void DisplayStatusMessage(String message) {
-            AddText(" -!- " + message);
+            AddText(" <!> " + message);
         }
 
         /// <summary>
@@ -278,7 +278,7 @@ namespace RingLAN {
                 AddText(message.Payload);
                 return;
             }
-            AddText(" -{0} -> {1}- {2}".With(message.Sender, message.Recipient, message.Payload));
+            AddText(" <{0} -> {1}> {2}".With(message.Sender, message.Recipient, message.Payload));
             if (message.SenderAddress != _client.Address) {
                 this.Invoke((Action) (() => {
                                           Image horse = Names.GetImage(message.SenderAddress);
