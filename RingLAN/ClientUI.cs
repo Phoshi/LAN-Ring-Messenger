@@ -12,12 +12,28 @@ namespace RingLAN {
         /// </summary>
         private readonly Client _client;
 
+        /// <summary>
+        /// Whether the UI thinks it's logged in or not. This does not represent the underlying Client object's login state, but is rather used for UI logic.
+        /// </summary>
         private bool _loggedIn;
+
+        /// <summary>
+        /// List of logged in clients. This is not a straight copy of the underlying Client object's listing, but is used for UI logic.
+        /// </summary>
         private readonly List<char> _knownClients = new List<char>();
 
+        /// <summary>
+        /// The last message object that was handled. 
+        /// </summary>
         private Message _lastRecievedMessage;
+        /// <summary>
+        /// The time the last message was recieved.
+        /// </summary>
         private DateTime _lastRecievedOn;
 
+        /// <summary>
+        /// The options for the popup notifications
+        /// </summary>
         private readonly NotifierOptions notificationOptions = new NotifierOptions();
 
         /// <summary>
@@ -43,9 +59,9 @@ namespace RingLAN {
 
 
 
-        //
-        // Event Handlers
-        //
+        ////////////////////
+        // Event Handlers //
+        ////////////////////
 
         /// <summary>
         /// Event handler for form show
@@ -92,6 +108,9 @@ namespace RingLAN {
         /// <param name="character">The recieved character</param>
         void Communications_CharacterRecieved(object sender, char character) {
             if (DebugModeCheck.Checked) {
+                if (character == 0) {
+                    character = ' ';
+                }
                 RecievedMessagesBox.Invoke((Action)(() => RecievedMessagesBox.Text += character));
             }
         }
@@ -125,7 +144,7 @@ namespace RingLAN {
         /// <summary>
         /// Send a message to all listening clients
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">The message object to be sent.</param>
         private void OnSendMessage(Message message) {
             if (SendMessage!=null) {
                 MessageEventArgs args = new MessageEventArgs(message);
@@ -133,26 +152,50 @@ namespace RingLAN {
             }
         }
 
-
+        /// <summary>
+        /// Event handler for the log out button.
+        /// </summary>
+        /// <param name="sender" />
+        /// <param name="e" />
         private void LogOutButton_Click(object sender, EventArgs e) {
             _client.LoggedIn = false;
         }
 
+        /// <summary>
+        /// Event handler for the debug check.
+        /// </summary>
+        /// <param name="sender" />
+        /// <param name="e" />
         private void DebugModeCheck_CheckedChanged(object sender, EventArgs e) {
             _client.Debug = DebugModeCheck.Checked;
         }
 
+        /// <summary>
+        /// Event handler for form closed events
+        /// </summary>
+        /// <param name="sender" />
+        /// <param name="e" />
         private void ClientUI_FormClosed(object sender, FormClosedEventArgs e) {
             _client.LoggedIn = false;
             _client.Close();
         }
 
+        /// <summary>
+        /// Event handler for the kick attempt button
+        /// </summary>
+        /// <param name="sender" />
+        /// <param name="e" />
         private void AttemptKickButton_Click(object sender, EventArgs e) {
             char target = RecipientSelectBox.Text[0];
             _client.Communications.PassOn(new Message(null, target, target, MessageType.Logout));
         }
 
-
+        /// <summary>
+        /// Event handler for the send raw packet button.
+        /// Sends the contents of the textbox as a stream of characters.
+        /// </summary>
+        /// <param name="sender" />
+        /// <param name="e" />
         private void BringDownTheSkyButton_Click(object sender, EventArgs e) {
             byte[] buffer = new byte[InputBox.Text.Length];
             int position = 0;
@@ -166,10 +209,20 @@ namespace RingLAN {
             ((InMemoryInput)_client.Communications).putChars(buffer);
         }
 
+        /// <summary>
+        /// Event handler for textbox keydowns.
+        /// </summary>
+        /// <param name="sender" />
+        /// <param name="e" />
         private void RecievedMessagesBox_KeyDown(object sender, KeyEventArgs e) {
             e.SuppressKeyPress = true;
         }
 
+        /// <summary>
+        /// Event handler for input box keydowns to provide shortcuts
+        /// </summary>
+        /// <param name="sender" />
+        /// <param name="e" />
         private void InputBox_KeyDown(object sender, KeyEventArgs e) {
             if (e.KeyCode == Keys.Return) {
                 SendButton_Click(this, null);
@@ -177,7 +230,12 @@ namespace RingLAN {
             }
         }
 
-        private void SendButton_Click(object sender, EventArgs e) {
+        /// <summary>
+        /// Event handler for the send button, handles sending logic
+        /// </summary>
+        /// <param name="sender" />
+        /// <param name="e" />
+        private void SendButton_Click(object sender, EventArgs e) { //TODO: Refactor into seperate methods.
             if (!_client.LoggedIn) {
                 if (InputBox.Text.Length == 0) {
                     return;
@@ -219,10 +277,13 @@ namespace RingLAN {
             InputBox.Text = "";
         }
 
-        //
-        // User manipulation and such
-        //
+        ////////////////////////////////
+        // User manipulation and such //
+        ////////////////////////////////
 
+        /// <summary>
+        /// Rebuilds the logged in users list based on the underlying Client object's state.
+        /// </summary>
         private void HandleLogin() {
             RecipientSelectBox.Items.Clear();
             foreach (char client in _client.Clients) {
@@ -231,9 +292,9 @@ namespace RingLAN {
             RecipientSelectBox.SelectedIndex = 0;
         }
 
-        //
-        // Private UI Methods
-        //
+        ////////////////////////////
+        // UI interaction methods //
+        ////////////////////////////
 
         /// <summary>
         /// Appends text to the primary display
@@ -290,6 +351,10 @@ namespace RingLAN {
             }
         }
 
+        /// <summary>
+        /// Display's a login message for the login packet, if appropriate.
+        /// </summary>
+        /// <param name="message">The packet to handle.</param>
         private void DisplayLoginMessage(Message message) {
             if (message.Type == MessageType.Login && message.SenderAddress != _client.Address && _knownClients.Contains(message.SenderAddress)) {
                 DisplayStatusMessage("Login collision for {0} detected!".With(message.Sender));
