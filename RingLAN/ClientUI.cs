@@ -90,6 +90,7 @@ namespace RingLAN {
                     break;
                 case MessageType.IdentResponse:
                     this.Invoke((Action)HandleLogin);
+                    DisplayStatusMessage("{0} is online.".With(message.Sender));
                     break;
                 case MessageType.Acknowledge:
                     DisplayStatusMessage("Ident taken! Try again.");
