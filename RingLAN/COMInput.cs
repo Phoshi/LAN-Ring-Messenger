@@ -197,6 +197,11 @@ namespace RingLAN {
                     PassOn(newMessage);
                     continue;
                 }
+                if (newMessage.Address == _parent.Address && !MessageChecker.Check(newMessage)){
+                    Logger.Log("Checksum failed for {0}!".With(newMessage.ToString()), _parent.DisplayAddress);
+                    PassOn(newMessage.NotAcknowledgable);
+                    continue;
+                }
                 if (newMessage.Address != _parent.Address && newMessage.SenderAddress != _parent.Address) {
                     //If it's not for me or from me, send it on
                     PassOn(newMessage);
@@ -217,7 +222,7 @@ namespace RingLAN {
                     _pending = _pending.Where(item => item.SendCount <= 5).ToList();
                     messages =
                         _pending.Where(
-                            item => item.LastSend < DateTime.UtcNow.AddSeconds(-1) && item.LastSend != DateTime.MinValue).OrderByDescending(
+                            item => item.LastSend < DateTime.UtcNow.AddSeconds(-2) && item.LastSend != DateTime.MinValue).OrderByDescending(
                                 item => item.LastSend.Ticks).Unique(
                                     item => item.Message.Address);
                     if (messages.Count() == 0) {
@@ -229,6 +234,7 @@ namespace RingLAN {
                 foreach (Pending message in messages) {
                     message.SendCount++;
                     message.LastSend = DateTime.UtcNow;
+                    Logger.Log("Sending {0}".With(message.Message.ToString()), _parent.DisplayAddress);
                     byte[] buffer = message.Message.ToByteArray();
                     putChars(buffer);
                 }
@@ -265,10 +271,6 @@ namespace RingLAN {
                 }
             }
             Message newMessage = new Message(buffer);
-            if (!MessageChecker.Check(newMessage)) {
-                PassOn(newMessage.NotAcknowledgable);
-                return null;
-            }
             return newMessage;
         }
 

@@ -245,7 +245,7 @@ namespace RingLAN {
             Array.Copy(headerBytes, byteArray, headerBytes.Length);
             byte[] payloadBytes = _message != null ? Encoding.ASCII.GetBytes(_message) : new byte[10];
             Array.Copy(payloadBytes, 0, byteArray, 4, Math.Min(payloadBytes.Length, 10));
-            byteArray[14] = computeChecksum ? MessageChecker.GetChecksum(this) : (byte)0;
+            byteArray[14] = computeChecksum ? this.Checksum : (byte)0;
             byteArray[15] = Encoding.ASCII.GetBytes("}")[0];
             return byteArray;
         }

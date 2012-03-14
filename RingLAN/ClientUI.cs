@@ -207,7 +207,7 @@ namespace RingLAN {
             if (buffer.Length >= 14) {
                 buffer[14] = MessageChecker.GetChecksum(new Message(buffer));
             }
-            ((InMemoryInput)_client.Communications).putChars(buffer);
+            ((COMInput)_client.Communications).putChars(buffer);
         }
 
         /// <summary>
@@ -374,8 +374,13 @@ namespace RingLAN {
                     }
                     return;
                 }
-                _knownClients.Add(message.SenderAddress);
-                AddText(" > {0} has signed in!".With(message.Sender));
+                if (!_knownClients.Contains(message.SenderAddress)){
+                    _knownClients.Add(message.SenderAddress);
+                    AddText(" > {0} has signed in!".With(message.Sender));
+                }
+                else{
+                    AddText(" > {0} has signed in... again!".With(message.Sender));
+                }
             }
             else {
                 if (!_client.LoggedIn) {
