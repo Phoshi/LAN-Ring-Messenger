@@ -50,6 +50,7 @@ namespace RingLAN {
                 8,                          //Data bits
                 StopBits.One);              //Stop bits
             _port.Handshake = Handshake.RequestToSend;
+            _port.ReadTimeout = 2000;
             _port.Open();
 
             this.Recieved += RecieveMessage;
@@ -250,7 +251,14 @@ namespace RingLAN {
             byte[] buffer = new byte[16];
             int recievedBytes = 0;
             while (recievedBytes <= 15) {
-                byte character = getByte();
+                byte character;
+                try {
+                    character = getByte();
+                }
+                catch (TimeoutException) {
+                    continue;
+                }
+
                 OnCharacterRecieved((char)character);
                 Logger.Log(character);
                 buffer[recievedBytes] = character;
