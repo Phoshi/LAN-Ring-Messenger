@@ -66,6 +66,7 @@ namespace RingLAN {
             else {
                 _partner.Buffer.AddRange(toWrite);
             }
+            Thread.Sleep(500);
         }
     }
 }
