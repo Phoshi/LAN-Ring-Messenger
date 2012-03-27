@@ -338,6 +338,12 @@ namespace RingLAN {
                 (DateTime.UtcNow - _lastRecievedOn).TotalSeconds < 5) {
                 TrimMessageBox();
                 AddText(message.Payload);
+                if (Notifier.TopMostNotification != null) {
+                    this.Invoke((Action) (() => {
+                                              Notifier.TopMostNotification.description += message.Payload;
+                                              Notifier.TopMostNotification.Refresh();
+                                          }));
+                }
                 return;
             }
             AddText(" <{0} -> {1}> {2}".With(message.Sender, message.Recipient, message.Payload));
