@@ -10,7 +10,7 @@ using System.Windows.Forms;
 namespace ToastNotifier {
     public partial class Notifier : Form {
         private readonly string title;
-        private readonly string description;
+        public string description;
         private readonly Image image;
         private bool goingUp = true;
         private readonly string category;
@@ -20,7 +20,13 @@ namespace ToastNotifier {
         private int newHeightToRiseTo = -1;
         private readonly NotifierOptions options;
 
-        public Notifier(NotifierOptions newOptions, string notifierTitle, string notifierDescription, string notifierCategory, Image notifierImage = null, int notifierheightToRiseTo = -1) {
+        private static Notifier previousForm = null;
+
+        public static Notifier TopMostNotification {
+            get { return previousForm; }
+        }
+
+        public Notifier(NotifierOptions newOptions, string notifierTitle, string notifierDescription, string notifierCategory, Image notifierImage = null) {
             InitializeComponent();
             startTickCount = Environment.TickCount;
             title = notifierTitle;
@@ -36,7 +42,7 @@ namespace ToastNotifier {
             Color magicPink = Color.FromArgb(255, 0, 255);
             this.BackColor = magicPink;
             this.TransparencyKey = magicPink;
-            heightToRiseTo = notifierheightToRiseTo == -1 ? Screen.PrimaryScreen.WorkingArea.Bottom : notifierheightToRiseTo;
+            heightToRiseTo = previousForm == null ? Screen.PrimaryScreen.WorkingArea.Bottom : previousForm.Top;
 
             int textStartingPoint = (image == null || !options.showImage) ? 10 : 300;
             int descriptionStartingHeight = title == null ? 10 : TextRenderer.MeasureText(title, options.titleFont).Height + 10;
@@ -59,6 +65,8 @@ namespace ToastNotifier {
                 }
                 previousHeight = this.Height;
             }
+
+            previousForm = this;
         }
 
         private void Notifier_Paint(object sender, PaintEventArgs e) {
@@ -255,6 +263,12 @@ namespace ToastNotifier {
 
         private void Notifier_MouseLeave(object sender, EventArgs e) {
             movementTimer.Start();
+        }
+
+        private void Notifier_FormClosed(object sender, FormClosedEventArgs e) {
+            if (previousForm == this) {
+                previousForm = null;
+            }
         }
 
     }

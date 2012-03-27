@@ -47,6 +47,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Toast Notifier";
             this.TopMost = true;
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Notifier_FormClosed);
             this.Click += new System.EventHandler(this.Notifier_Click);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Notifier_Paint);
             this.MouseEnter += new System.EventHandler(this.Notifier_MouseEnter);
