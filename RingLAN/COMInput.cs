@@ -224,15 +224,19 @@ namespace RingLAN {
             while (!Closed) {
                 IEnumerable<Pending> messages;
                 lock (this) {
+                    //Pull out items that failed and fire their failure events
                     List<Pending> failedItems = _pending.Where(item => item.SendCount > 5).ToList();
                     failedItems.ForEach(item => OnMessageFailed(new MessageEventArgs(item.Message)));
                     _pending = _pending.Where(item => item.SendCount <= 5).ToList();
+
+                    //Choose all messages eligable for resending (Sent >2 seconds ago to a unique client)
                     messages =
                         _pending.Where(
                             item => item.LastSend < DateTime.UtcNow.AddSeconds(-2) && item.LastSend != DateTime.MinValue).OrderByDescending(
                                 item => item.LastSend.Ticks).Unique(
                                     item => item.Message.Address);
                     if (messages.Count() == 0) {
+                        //If no messages eligable for resend, pick out any messages that need to be sent for the first time.
                         messages = _pending.Where(item => item.LastSend == DateTime.MinValue).Unique(item => item.Message.Address);
                         messages = messages.Where(item => item.Message == _pending.NextTo(item.Message.Address).Message);
                     }
