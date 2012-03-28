@@ -177,7 +177,6 @@ namespace RingLAN {
         /// <param name="sender" />
         /// <param name="e" />
         private void ClientUI_FormClosed(object sender, FormClosedEventArgs e) {
-            _client.LoggedIn = false;
             _client.Close();
         }
 
@@ -290,7 +289,9 @@ namespace RingLAN {
             foreach (char client in _client.Clients) {
                 RecipientSelectBox.Items.Add(client);
             }
-            RecipientSelectBox.SelectedIndex = 0;
+            if (RecipientSelectBox.Items.Count > 0){
+                RecipientSelectBox.SelectedIndex = 0;
+            }
         }
 
         ////////////////////////////
