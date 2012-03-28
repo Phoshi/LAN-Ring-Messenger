@@ -6,6 +6,9 @@ using Extensions;
 using ToastNotifier;
 
 namespace RingLAN {
+    /// <summary>
+    /// A ClientUI object is a GUI form that handles the user-interactive parts of messaging.
+    /// </summary>
     public partial class ClientUI : Form {
         /// <summary>
         /// Holds the reference to this UI's underlying client object

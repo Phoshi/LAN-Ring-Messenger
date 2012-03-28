@@ -17,6 +17,10 @@ namespace RingLAN {
         private readonly string _message = "";
         private readonly MessageType _type;
         private readonly byte _checksum;
+
+        /// <summary>
+        /// Dictionary to store the relationship between packet types and actual protocol symbols
+        /// </summary>
         private readonly Dictionary<MessageType, char[]> _messageTypes = new Dictionary<MessageType, char[]> {
                                                                                                       {MessageType.Login, new[]{'L'}},
                                                                                                       {MessageType.Logout, new[]{'X'}}, 
@@ -141,86 +145,6 @@ namespace RingLAN {
                 _checksum = data[14];
             }
             catch (Exception) {
-                /*  I want to be the very best,
-                    Like no one ever was.
-                    To catch them is my real test,
-                    To train them is my cause.
-
-                    I will travel across the land,
-                    Searching far and wide.
-                    Each Pokemon to understand
-                    The power that's inside
-
-                    (Gotta catch 'em all)
-
-                    It's you and me
-                    I know it's my destiny
-
-                    Pokemon!
-
-                    You're my best friend,
-                    In a world we must defend.
-                    Pokemon
-
-                    (Gotta catch 'em all)
-
-                    A heart so true.
-                    Our courage will pull us through.
-                    You teach me and I'll teach you.
-                    Pokemon.
-
-                    (Gotta catch 'em all)
-
-                    Yeah
-                    Every challenge along the way
-                    with courage I will face.
-                    I will battle everyday
-                    to claim my rightful place.
-
-                    Come with me the time is right.
-                    There's no better team.
-                    Arm and arm well win the fight.
-                    It's always been our dream.
-
-                    Pokemon!
-
-                    (Gotta catch 'em all)
-
-                    It's you and me
-                    I know it's my destiny
-
-                    Pokemon!
-
-                    Oh, your my best friend,
-                    in a world we must defend.
-
-                    Pokemon!
-
-                    A heart so true.
-                    Our courage will pull us through.
-                    You teach me and ill teach you.
-
-                    Pokemon!
-
-                    (Gotta catch 'em all)x4
-
-                    Yeah!
-
-                    Pokemon!
-
-                    It's you and me
-                    I know it's my destiny
-
-                    Pokemon!
-
-                    Oh, your my best friend,
-                    in a world we must defend.
-
-                    Pokemon!
-
-                    A heart so true.
-                    Our courage will pull us through.
-                    You teach me and ill teach you.*/
             }
         }
 

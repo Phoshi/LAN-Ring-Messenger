@@ -4,28 +4,59 @@ using System.Threading;
 using Extensions;
 
 namespace RingLAN {
+    /// <summary>
+    /// Class to provide in-memory ring support
+    /// </summary>
     class InMemoryInput : COMInput {
+        /// <summary>
+        /// An internal buffer to simulate the RS-232 cable
+        /// </summary>
         private readonly List<byte> _buffer = new List<byte>();
+
+        /// <summary>
+        /// The chance of random simulated failures on the line
+        /// </summary>
         public int quality = 10;
 
+        /// <summary>
+        /// Gets the simulated buffer
+        /// </summary>
         public List<byte> Buffer {
             get { return _buffer; }
         }
 
+        /// <summary>
+        /// The In-Memory partner object to "transmit" to
+        /// </summary>
         private InMemoryInput _partner;
 
+        /// <summary>
+        /// Gets and sets the partner object to "transmit" to
+        /// </summary>
         public InMemoryInput Partner {
             get { return _partner; }
             set { _partner = value; }
         }
 
+        /// <summary>
+        /// Dummy constructors
+        /// </summary>
+        /// <param name="dummyName">A dummy string that nothing is done with</param>
         public InMemoryInput(string dummyName = "") {
         }
 
+        /// <summary>
+        /// A constructor to set up the object with a transmission partner
+        /// </summary>
+        /// <param name="partner"></param>
         public InMemoryInput(InMemoryInput partner) {
             _partner = partner;
         }
 
+        /// <summary>
+        /// Override to pull a byte out of the simulated buffer
+        /// </summary>
+        /// <returns>A byte from the transmitting partner object</returns>
         public override byte getByte() {
             while (_buffer.Count == 0) {
                 Thread.Sleep(100);
@@ -35,6 +66,12 @@ namespace RingLAN {
             return firstByte;
         }
 
+        /// <summary>
+        /// Override to insert a series of bytes into the buffer
+        /// Will also simulate line noise, random corruption, and switch Ack packets to simulate different clients
+        /// following different standards
+        /// </summary>
+        /// <param name="toWrite">Byte array to insert</param>
         public override void putChars(byte[] toWrite) {
             Random rng = new Random();
             int failure1 = rng.Next(quality);

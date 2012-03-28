@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace RingLAN {
+    /// <summary>
+    /// Static extensions class to provide additional extension methods for Enumerable objects
+    /// </summary>
     public static class listExtensions {
-
         /// <summary>
         /// Returns a list with only elements with unique keys. 
         /// Where elements have equivilent keys, the first element is returned.

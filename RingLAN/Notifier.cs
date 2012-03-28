@@ -8,6 +8,12 @@ using System.Text;
 using System.Windows.Forms;
 
 namespace ToastNotifier {
+
+    /// <summary>
+    /// Note: This is old code I wrote some time ago.
+    /// I apologise for the lack of good standards, commenting, or sanity
+    /// I don't want to touch it either.
+    /// </summary>
     public partial class Notifier : Form {
         private readonly string title;
         public string description;

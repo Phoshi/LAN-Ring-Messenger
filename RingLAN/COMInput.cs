@@ -16,10 +16,29 @@ namespace RingLAN {
         //Private Class Variables
         //
         
+        /// <summary>
+        /// The serial port that this object reads and writes from
+        /// </summary>
         private readonly SerialPort _port;
+
+        /// <summary>
+        /// The Client object that this comms object is bound to
+        /// </summary>
         private Client _parent;
+
+        /// <summary>
+        /// The pending list, for messages that have yet to be sent
+        /// </summary>
         private List<Pending> _pending = new List<Pending>();
+
+        /// <summary>
+        /// Thread for running the read loop
+        /// </summary>
         private readonly Thread readThread;
+
+        /// <summary>
+        /// Thread for running the write loop
+        /// </summary>
         private readonly Thread writeThread;
 
         /// <summary>
@@ -144,8 +163,14 @@ namespace RingLAN {
         /// </summary>
         public event MessageRecievedHandler Recieved;
 
+        /// <summary>
+        /// The Message Failed event that raises when a message fails to send
+        /// </summary>
         public event MessageRecievedHandler Failed;
 
+        /// <summary>
+        /// The event that fires every time a character is recieved through the COM port
+        /// </summary>
         public event CharacterRecievedHandler CharacterRecieved;
 
         //
@@ -296,6 +321,11 @@ namespace RingLAN {
         // Event Handlers
         //
 
+        /// <summary>
+        /// Event Handler for reciving a message and handling the low-level post-recieve tasks
+        /// </summary>
+        /// <param name="sender">This comms object</param>
+        /// <param name="args">The MessageEventArgs object containing the recieved message</param>
         private void RecieveMessage(object sender, MessageEventArgs args) {
             Message message = args.Message;
 

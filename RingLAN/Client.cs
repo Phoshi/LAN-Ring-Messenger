@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 
 namespace RingLAN {
+    /// <summary>
+    /// A client object performs the high level but not user-interactive messaging logic.
+    /// </summary>
     public class Client {
         //
         //Class Variables
@@ -11,12 +14,24 @@ namespace RingLAN {
         /// </summary>
         private char _address = ' ';
 
+        /// <summary>
+        /// Stores the debug mode state
+        /// </summary>
         private bool _promiscuous;
 
+        /// <summary>
+        /// Stores whether this client is logged in
+        /// </summary>
         private bool _loggedIn;
 
+        /// <summary>
+        /// Stores the list of known users on the ring
+        /// </summary>
         private readonly List<char> _identifiedUsers = new List<char>();
 
+        /// <summary>
+        /// Gets and sets the debug mode status of this client
+        /// </summary>
         public bool Debug {
             get { return _promiscuous; }
             set { _promiscuous = value; }
@@ -83,6 +98,9 @@ namespace RingLAN {
         // Public Methods
         //
 
+        /// <summary>
+        /// Shuts down this client.
+        /// </summary>
         public void Close() {
             Communications.Close();
         }
@@ -132,6 +150,12 @@ namespace RingLAN {
             }
         }
 
+        /// <summary>
+        /// Event handler for recieving a new message.
+        /// Passes events up to the UI if neccesary, otherwise responds as appropriate
+        /// </summary>
+        /// <param name="sender">Communications object that raised the event</param>
+        /// <param name="args">MessageEventArgs object containing the recieved message</param>
         public void RecieveMessage(object sender, MessageEventArgs args) {
             Message message = args.Message;
             if (_promiscuous || message.Address == Address || message.SenderAddress == Address) {

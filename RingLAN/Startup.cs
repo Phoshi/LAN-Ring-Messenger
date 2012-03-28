@@ -39,6 +39,11 @@ namespace RingLAN {
             PhysicalPortSelect.Items.Add("COM7");
         }
 
+        /// <summary>
+        /// Launch a virtual ring
+        /// </summary>
+        /// <param name="sender"/>
+        /// <param name="e"/>
         private void VirtualLaunchButton_Click(object sender, EventArgs e) {
             Logger.Logging = false;
             int numClients = int.Parse(VirtualItemsSelect.Text);
@@ -63,6 +68,11 @@ namespace RingLAN {
             this.Hide();
         }
 
+        /// <summary>
+        /// Handle the closing of each form, so we can shut down when they're all gone
+        /// </summary>
+        /// <param name="sender"/>
+        /// <param name="e"/>
         void client_FormClosed(object sender, FormClosedEventArgs e) {
             openForms--;
 
@@ -71,6 +81,11 @@ namespace RingLAN {
             }
         }
 
+        /// <summary>
+        /// Launch a physical client and attempt to connect over a COM port
+        /// </summary>
+        /// <param name="sender"/>
+        /// <param name="e"/>
         private void PhysicalLaunchButton_Click(object sender, EventArgs e) {
             Logger.Log("Setting up physical client on port {0}".With(PhysicalPortSelect.Text));
             try {
