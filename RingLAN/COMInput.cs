@@ -51,6 +51,7 @@ namespace RingLAN {
                 StopBits.One);              //Stop bits
             _port.Handshake = Handshake.RequestToSend;
             _port.ReadTimeout = 2000;
+            _port.WriteTimeout = 2000;
             _port.Open();
 
             this.Recieved += RecieveMessage;
@@ -99,7 +100,12 @@ namespace RingLAN {
         /// </summary>
         /// <param name="toWrite">A byte array</param>
         public virtual void putChars(byte[] toWrite) {
-            _port.Write(toWrite, 0, toWrite.Length);
+            try{
+                _port.Write(toWrite, 0, toWrite.Length);
+            }
+            catch (TimeoutException){
+                return;
+            }
         }
 
         /// <summary>
