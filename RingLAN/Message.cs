@@ -17,13 +17,13 @@ namespace RingLAN {
         private readonly string _message = "";
         private readonly MessageType _type;
         private readonly byte _checksum;
-        private readonly Dictionary<MessageType, char> _messageTypes = new Dictionary<MessageType, char> {
-                                                                                                      {MessageType.Login, 'L'},
-                                                                                                      {MessageType.Logout, 'X'}, 
-                                                                                                      {MessageType.IdentResponse, 'R'},
-                                                                                                      {MessageType.Message, 'D'},
-                                                                                                      {MessageType.Acknowledge, 'Y'},
-                                                                                                      {MessageType.NotAcknowledgable, 'N'},
+        private readonly Dictionary<MessageType, char[]> _messageTypes = new Dictionary<MessageType, char[]> {
+                                                                                                      {MessageType.Login, new[]{'L'}},
+                                                                                                      {MessageType.Logout, new[]{'X'}}, 
+                                                                                                      {MessageType.IdentResponse, new[]{'R'}},
+                                                                                                      {MessageType.Message, new[]{'D'}},
+                                                                                                      {MessageType.Acknowledge, new[]{'Y', 'A'}},
+                                                                                                      {MessageType.NotAcknowledgable, new[]{'N'}},
     };
 
         /// <summary>
@@ -131,7 +131,11 @@ namespace RingLAN {
             try {
                 _to = (char)data[1];
                 _from = (char)data[2];
-                _type = (from kvPair in _messageTypes where kvPair.Value == data[3] select kvPair.Key).FirstOrDefault();
+                foreach (var kvPair in _messageTypes){
+                    if (kvPair.Value.Contains((char)data[3])){
+                        _type = kvPair.Key;
+                    }
+                }
                 byte[] payloadData = data.Skip(4).Take(10).ToArray();
                 _message = Encoding.ASCII.GetString(payloadData).Trim('\0');
                 _checksum = data[14];
@@ -240,7 +244,7 @@ namespace RingLAN {
             header.Append("{");
             header.Append(_to);
             header.Append(_from);
-            header.Append(_messageTypes[_type]);
+            header.Append(_messageTypes[_type].First());
             byte[] headerBytes = Encoding.ASCII.GetBytes(header.ToString());
             Array.Copy(headerBytes, byteArray, headerBytes.Length);
             byte[] payloadBytes = _message != null ? Encoding.ASCII.GetBytes(_message) : new byte[10];
