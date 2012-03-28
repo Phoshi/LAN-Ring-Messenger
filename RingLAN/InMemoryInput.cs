@@ -40,6 +40,7 @@ namespace RingLAN {
             int failure1 = rng.Next(quality);
             int failure2 = rng.Next(quality);
             int failure3 = rng.Next(quality);
+            int swapAck = rng.Next(2);
 
             if (failure1 == 0) { //Failure!
                 Logger.Log("Corrupting packet {0}".With(new Message(toWrite).ToString()), "Failure");
@@ -59,6 +60,12 @@ namespace RingLAN {
                 Array.Copy(toWrite, 10, newBuffer, 14, 6);
                 toWrite = newBuffer;
             }
+
+            if (toWrite[3] == (byte)'Y' && swapAck > 0){
+                toWrite[3] = (byte)'A';
+                Logger.Log("Swapping Y ack packet for an A ack packet!", "Failure");
+            }
+
             Logger.Log("Sending Packet {0}".With(new Message(toWrite).ToString()), "In Memory Input");
             if (_partner == null) {
                 _buffer.AddRange(toWrite);
