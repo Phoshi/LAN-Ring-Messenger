@@ -21,7 +21,16 @@ namespace ToastNotifier {
         private bool goingUp = true;
         private readonly string category;
         private int heightToRiseTo;
-        public Form parentForm;
+        private Form _parentForm = null;
+
+        public Form parentForm {
+            get { return _parentForm; }
+            set {
+                _parentForm = value;
+                _parentForm.Focus();
+            }
+        }
+
         private readonly int startTickCount;
         private int newHeightToRiseTo = -1;
         private readonly NotifierOptions options;
@@ -30,6 +39,29 @@ namespace ToastNotifier {
 
         public static Notifier TopMostNotification {
             get { return previousForm; }
+        }
+
+        private static NotifierOptions _defaultOptions = new NotifierOptions();
+
+        public static NotifierOptions DefaultOptions {
+            get { return _defaultOptions; }
+            set { _defaultOptions = value; }
+        }
+
+        public static Notifier ShowNotification(string title, string description, string category = "", Image image = null, Form parent = null) {
+            Notifier newNotifier = null;
+            Action showNotification = (() => {
+                                           newNotifier = new Notifier(Notifier.DefaultOptions, title, description, category, image);
+                                           newNotifier.parentForm = parent;
+                                           newNotifier.Visible = true;
+                                       });
+            if (parent != null) {
+                parent.Invoke(showNotification);
+            }
+            else {
+                showNotification();
+            }
+            return newNotifier;
         }
 
         public Notifier(NotifierOptions newOptions, string notifierTitle, string notifierDescription, string notifierCategory, Image notifierImage = null) {
@@ -250,6 +282,14 @@ namespace ToastNotifier {
                 return true;
             }
         }
+
+        protected override CreateParams CreateParams {
+            get {
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle |= 0x00000008; //WS_EX_TOPMOST 
+                return cp;
+            }
+        } 
 
         private void Notifier_Click(object sender, EventArgs e) {
             if (parentForm != null) {

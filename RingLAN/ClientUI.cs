@@ -352,13 +352,9 @@ namespace RingLAN {
             }
             AddText(" <{0} -> {1}> {2}".With(message.Sender, message.Recipient, message.Payload));
             if (message.SenderAddress != _client.Address) {
-                this.Invoke((Action) (() => {
-                                          Image horse = Names.GetImage(message.SenderAddress);
-                                          Notifier notifier = new Notifier(notificationOptions, "New Message from {0}".With(message.Sender), message.Payload,
-                                                                           "{0} -> {1}".With(message.Sender, message.Recipient), horse)
-                                                              {parentForm = this};
-                                          notifier.Show();
-                                      }));
+                Image horse = Names.GetImage(message.SenderAddress);
+                Notifier.ShowNotification("New Message from {0}".With(message.Sender), message.Payload,
+                                          "{0} -> {1}".With(message.Sender, message.Recipient), horse, this);
             }
         }
 
